@@ -1,0 +1,4 @@
+Faster builds:
+ - Add --resident to every call to the compiler.  
+ - Keeps mono in memory.  Eats up 80MB of ram.  For me reduces compile time 
+   from 3.5s to .5 sec
