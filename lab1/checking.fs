@@ -1,3 +1,4 @@
+#light
 let rec growth years balance = 
     match years with 
         | 0 -> balance
