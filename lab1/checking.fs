@@ -3,4 +3,4 @@ let rec growth years balance =
         | 0 -> balance
         | _ -> 1.05 * growth (years - 1) balance
 
-printf "%f" (growth 50 100.0)
+printfn "%f" (growth 50 100.0)
