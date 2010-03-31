@@ -1,19 +1,19 @@
-let randomReturn = 
-    let x = System.Random().NextDouble()
-    match x with
-        | x when x < 0.1 -> 0
-        | x when x < 0.6 -> 1
-        | x when x < 0.65 -> 2
+let r = System.Random()
+
+let distribution1 = 
+    let randNum = r.NextDouble()
+    match randNum with
+        | randNum when randNum < 0.1 -> 0
+        | randNum when randNum < 0.6 -> 1
+        | randNum when randNum < 0.65 -> 2
         | _ -> 3
 
-let randomReturn2 = 
-    let x = System.Random().NextDouble()
-    if x < 0.1 then 0
-    elif x < 0.6 then 1
-    elif x < 0.65 then 2
-    else 3
+let rec manySamples i =
+    match i with
+        | 0 -> 0
+        | _ -> (distribution1) + manySamples (i - 1)
 
+printfn "%d" (manySamples 5)
 
-
-for i = 1 to 10 do
-    printfn "%d" randomReturn2
+for i = 0 to 10 do
+    printfn "%f" (r.NextDouble())
