@@ -39,4 +39,15 @@ let rec manySamples i range dist =
 
 //printfn "%d" (manySamples 50 distribution1)
 //printfn "%d" (manySamples 50 distribution2)
-printfn "%d" (manySamples 50 [| 0.3; 0.9 |] distribution )
+//printfn "%d" (manySamples 50 [| 0.3; 0.9 |] distribution )
+
+open System.Collections.Generic
+let dict = new Dictionary<int,int>(10000)
+
+for i = 0 to 10000 do
+    let key = (manySamples 50 [| 0.3; 0.9 |] distribution)
+
+    if dict.ContainsKey(key) then
+        dict.[key] = dict.[key] + 1
+    else
+        dict.[key] = 1
