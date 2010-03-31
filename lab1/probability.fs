@@ -17,8 +17,10 @@ let distribution2 () =
         | _ -> 3
 
 let rec distInner randNum (range : float array) =
-    if range.Length >= 1 && randNum < range.[0] then
+    if randNum < range.[0] then
         0
+    elif range.Length = 1 then
+        1
     else
         (distInner randNum range.[1..]) + 1
 
@@ -37,4 +39,4 @@ let rec manySamples i range dist =
 
 //printfn "%d" (manySamples 50 distribution1)
 //printfn "%d" (manySamples 50 distribution2)
-printfn "%d" (manySamples 50 [| 0.3, 0.9 |] distribution )
+printfn "%d" (manySamples 50 [| 0.3; 0.9 |] distribution )
