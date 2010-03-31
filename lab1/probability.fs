@@ -16,11 +16,11 @@ let distribution2 () =
         | randNum when randNum < 0.95 -> 2
         | _ -> 3
 
-let distInner randNum range: float array =
+let rec distInner randNum (range : float array) =
     if range.Length >= 1 && randNum < range.[0] then
         0
     else
-        (distInner range.[1..] randNum) + 1
+        (distInner randNum range.[1..]) + 1
 
 let distribution range = 
     distInner (r.NextDouble()) range 
@@ -28,13 +28,13 @@ let distribution range =
 let rec manySamplesOld i dist =
     match i with
         | 1 -> dist ()
-        | _ -> dist () + manySamples (i - 1) dist
+        | _ -> dist () + manySamplesOld (i - 1) dist
 
-let rec manySamples i dist range =
+let rec manySamples i range dist =
     match i with
-        | 1 -> dist ()
-        | _ -> dist () + manySamples (i - 1) dist
+        | 1 -> dist range
+        | _ -> dist range + manySamples (i - 1) range dist
 
 //printfn "%d" (manySamples 50 distribution1)
 //printfn "%d" (manySamples 50 distribution2)
-printfn "%d" (manySamples 50 distribution [| 0.3, 0.9 |])
+printfn "%d" (manySamples 50 [| 0.3, 0.9 |] distribution )
