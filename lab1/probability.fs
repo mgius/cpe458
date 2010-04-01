@@ -1,3 +1,4 @@
+// This appears to be some sort of
 let r = System.Random()
 
 let distribution1 () = 
@@ -41,13 +42,15 @@ let rec manySamples i range dist =
 //printfn "%d" (manySamples 50 distribution2)
 //printfn "%d" (manySamples 50 [| 0.3; 0.9 |] distribution )
 
-open System.Collections.Generic
-let dict = new Dictionary<int,int>(10000)
+let result = List.sort [for i in 1..10000 -> (manySamples 100 [| 0.3; 0.9 |] distribution )]
 
-for i = 0 to 10000 do
-    let key = (manySamples 50 [| 0.3; 0.9 |] distribution)
+let rec handleList (li : int list) currentCount currentNum = 
+    if li.Tail = [] then // last one, print out stuff
+        printfn "%04d count %d" currentNum currentCount
+    elif li.Head = li.Tail.Head then // These two elements are the same, so collapse them
+        handleList li.Tail (currentCount + 1) currentNum
+    else 
+        printfn "%04d count %d" currentNum currentCount
+        handleList li.Tail 1 li.Tail.Head
 
-    if dict.ContainsKey(key) then
-        dict.[key] = dict.[key] + 1
-    else
-        dict.[key] = 1
+handleList result 1 result.Head
