@@ -46,11 +46,11 @@ let result = List.sort [for i in 1..10000 -> (manySamples 100 [| 0.3; 0.9 |] dis
 
 let rec handleList (li : int list) currentCount currentNum = 
     if li.Tail = [] then // last one, print out stuff
-        printfn "%04d count %d" currentNum currentCount
+        printfn "%04d, %d" currentNum currentCount
     elif li.Head = li.Tail.Head then // These two elements are the same, so collapse them
         handleList li.Tail (currentCount + 1) currentNum
     else 
-        printfn "%04d count %d" currentNum currentCount
+        printfn "%04d, %d" currentNum currentCount
         handleList li.Tail 1 li.Tail.Head
 
 handleList result 1 result.Head
