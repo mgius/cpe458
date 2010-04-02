@@ -54,3 +54,10 @@ let rec handleList (li : int list) currentCount currentNum =
         handleList li.Tail 1 li.Tail.Head
 
 handleList result 1 result.Head
+
+let sequence = seq { for i in 1..10000 -> (manySamples 100 [| 0.3; 0.9 |] distribution)}
+let resultSeq = Seq.countBy (fun elem -> elem) sequence
+
+let printSeq seq1 = Seq.iter (printf "%A ") seq1; printfn ""
+
+printSeq resultSeq
