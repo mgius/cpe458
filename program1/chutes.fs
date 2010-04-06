@@ -27,10 +27,27 @@ let gameBoard pos =
         | 98 -> 78
         | _ -> pos
 
-let rec rungame onePos twoPos whoseTurn =
-    match gameBoard (onePos + (roll ())) with
+[<AbstractClass>]
+type Player =
+    abstract shouldDouble : int -> int -> bool
+    abstract shouldTake : int -> int -> bool
+
+type Gius() as this =
+    let shouldDouble myPos hisPos = 
+        true
+    let shouldTake myPos hisPos = 
+        true
+    public val mutable pos = 0
+    public val mutable hasCube = true // Both players "start" with the cube
+
+let rec realRunGame (playerOne : Gius) playerTwo whoseTurn bet cubeOwner =
+    match gameBoard (playerOne.pos + (roll ())) with
         | newPos when newPos > 100 ->
             whoseTurn % 2 + 1 |> printfn "Player %d has won!"
-        | newPos -> rungame twoPos newPos (whoseTurn + 1)
+        | newPos -> 
+            playerOne.pos <- playerOne.pos + newPos
+            realRunGame playerTwo playerOne (whoseTurn + 1) bet 
+                cubeOwner
 
-rungame 0 0 0
+let runGame playerOne playerTwo = 
+    realRunGame playerOne playerTwo 0 0 1 -1
