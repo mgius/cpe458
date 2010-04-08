@@ -28,26 +28,43 @@ let gameBoard pos =
         | _ -> pos
 
 [<AbstractClass>]
-type Player =
+type Player() =
+    let mutable _pos = 0
+
+    member this.pos
+        with get() = 
+            _pos
+        and set(newValue) =
+            _pos <- newValue 
+
     abstract shouldDouble : int -> int -> bool
     abstract shouldTake : int -> int -> bool
 
-type Gius() as this =
-    let shouldDouble myPos hisPos = 
-        true
-    let shouldTake myPos hisPos = 
-        true
-    public val mutable pos = 0
-    public val mutable hasCube = true // Both players "start" with the cube
 
-let rec realRunGame (playerOne : Gius) playerTwo whoseTurn bet cubeOwner =
+(* This player always doubles if he is ahead, and always takes a double,
+   regardless of his position
+ *)
+type RecklessPlayer() =
+    inherit Player()
+    override this.shouldDouble myPos hisPos =
+        myPos > hisPos 
+
+    override this.shouldTake myPos hisPos =
+        true
+
+type Gius() =
+    inherit Player()
+    override this.shouldDouble myPos hisPos = 
+        true
+    override this.shouldTake myPos hisPos = 
+        true
+
+let rec realRunGame (playerOne : Player) playerTwo whoseTurn bet cubeOwner =
     match gameBoard (playerOne.pos + (roll ())) with
         | newPos when newPos > 100 ->
             whoseTurn % 2 + 1 |> printfn "Player %d has won!"
         | newPos -> 
             playerOne.pos <- playerOne.pos + newPos
-            realRunGame playerTwo playerOne (whoseTurn + 1) bet 
-                cubeOwner
+            realRunGame playerTwo playerOne (whoseTurn + 1) bet cubeOwner
 
-let runGame playerOne playerTwo = 
-    realRunGame playerOne playerTwo 0 0 1 -1
+//realRunGame (Gius()) (Gius()) 0 0 1 -1
