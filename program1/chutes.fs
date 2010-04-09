@@ -59,12 +59,23 @@ type Gius() =
     override this.shouldTake myPos hisPos = 
         true
 
-let rec realRunGame (playerOne : Player) playerTwo whoseTurn bet cubeOwner =
-    match gameBoard (playerOne.pos + (roll ())) with
-        | newPos when newPos > 100 ->
-            whoseTurn % 2 + 1 |> printfn "Player %d has won!"
-        | newPos -> 
-            playerOne.pos <- playerOne.pos + newPos
-            realRunGame playerTwo playerOne (whoseTurn + 1) bet cubeOwner
+let rec realRunGame (playerOne : Player) (playerTwo : Player) whoseTurn doubles cubeOwner =
+    let newDoubles = 
+        match playerOne.shouldDouble playerOne.pos playerTwo.pos with
+            | true -> 
+                match playerOne.shouldTake playerOne.pos playerTwo.pos with
+                    | true -> doubles + 1
+                    | false -> doubles - 1
+            | false -> doubles
 
-//realRunGame (Gius()) (Gius()) 0 0 1 -1
+    match newDoubles, gameBoard (playerOne.pos + (roll ())) with
+        | newDoubles, _ when newDoubles < doubles ->
+            // This is an indicator that one of the players rejected the bet
+            2.0 ** float doubles
+        | _, newPos when newPos > 100 ->
+            2.0 ** float newDoubles
+        | _, newPos -> 
+            playerOne.pos <- playerOne.pos + newPos
+            realRunGame playerTwo playerOne (whoseTurn + 1) newDoubles cubeOwner
+
+realRunGame (RecklessPlayer()) (RecklessPlayer()) 0 0 -1 |> printfn "%f"
