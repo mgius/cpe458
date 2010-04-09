@@ -52,6 +52,20 @@ type RecklessPlayer() =
     override this.shouldTake myPos hisPos =
         true
 
+(* 
+   Slightly more conservative playeri
+
+   Takes bets if he's not too far behind
+   Offers bets if he's far enough ahead
+*)
+type ConservativePlayer() =
+    inherit Player()
+    override this.shouldDouble myPos hisPos =
+        myPos > hisPos + 10
+
+    override this.shouldTake myPos hisPos =
+        myPos > hisPos + 10
+
 type Gius() =
     inherit Player()
     override this.shouldDouble myPos hisPos = 
@@ -68,14 +82,20 @@ let rec realRunGame (playerOne : Player) (playerTwo : Player) whoseTurn doubles 
                     | false -> doubles - 1
             | false -> doubles
 
+    let playerMod = 
+        match whoseTurn % 2 with
+            | 0 -> 1.0
+            | 1 -> -1.0
+            | _ -> 0.0 // impossible
+        
     match newDoubles, gameBoard (playerOne.pos + (roll ())) with
         | newDoubles, _ when newDoubles < doubles ->
             // This is an indicator that one of the players rejected the bet
-            2.0 ** float doubles
+            2.0 ** float doubles * playerMod
         | _, newPos when newPos > 100 ->
-            2.0 ** float newDoubles
+            2.0 ** float newDoubles * playerMod
         | _, newPos -> 
             playerOne.pos <- playerOne.pos + newPos
             realRunGame playerTwo playerOne (whoseTurn + 1) newDoubles cubeOwner
 
-realRunGame (RecklessPlayer()) (RecklessPlayer()) 0 0 -1 |> printfn "%f"
+realRunGame (RecklessPlayer()) (ConservativePlayer()) 0 0 -1 |> printfn "%f"
