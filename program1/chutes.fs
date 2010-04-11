@@ -73,8 +73,8 @@ type Gius() =
     override this.shouldTake myPos hisPos = 
         true
 
-let rec realRunGame (playerOne : Player) (playerTwo : Player) 
-        whoseTurn doubles cubeOwner =
+let rec realRunGame whoseTurn doubles cubeOwner 
+                   (playerOne : Player) (playerTwo : Player) =
 
     // Figure out what the new doubling value is
     let newDoubles, newOwner = 
@@ -104,7 +104,9 @@ let rec realRunGame (playerOne : Player) (playerTwo : Player)
         | _, newPos -> 
             playerOne.pos <- newPos
             (playerOne.pos, playerTwo.pos) ||> printfn "%d %d"
-            realRunGame playerTwo playerOne 
-                        (whoseTurn + 1) newDoubles newOwner
+            realRunGame (whoseTurn + 1) newDoubles newOwner
+                        playerTwo playerOne 
 
-realRunGame (RecklessPlayer()) (ConservativePlayer()) 0 0 -1 |> printfn "%f"
+let runGame = realRunGame 0 0 -1
+
+runGame (RecklessPlayer()) (RecklessPlayer()) |> printfn "%f"
