@@ -29,17 +29,8 @@ let gameBoard pos =
 
 [<AbstractClass>]
 type Player() =
-    let mutable _pos = 0
-
-    member this.pos
-        with get() = 
-            _pos
-        and set(newValue) =
-            _pos <- newValue 
-
     abstract shouldDouble : int -> int -> bool
     abstract shouldTake : int -> int -> bool
-
 
 (* This player always doubles if he is ahead, and always takes a double,
    regardless of his position
@@ -73,15 +64,17 @@ type Gius() =
     override this.shouldTake myPos hisPos = 
         true
 
-let rec realRunGame whoseTurn doubles cubeOwner 
-                   (playerOne : Player) (playerTwo : Player) =
+let rec realRunGame gameState 
+                    (playerOne : Player) (playerTwo : Player) =
 
+    let (whoseTurn, doubles, cubeOwner, pos1, pos2) = gameState
     // Figure out what the new doubling value is
+
     let newDoubles, newOwner = 
         match (cubeOwner = -1 || cubeOwner % 2 = whoseTurn % 2,
-               playerOne.shouldDouble playerOne.pos playerTwo.pos) with
+               playerOne.shouldDouble pos1 pos2) with
             | (true, true) -> 
-                match playerTwo.shouldTake playerTwo.pos playerOne.pos with
+                match playerTwo.shouldTake pos2 pos1 with
                     | true -> (doubles + 1, whoseTurn + 1)
                     | false -> (doubles - 1, cubeOwner)
             // Since we only care about true true, catch-all
@@ -93,20 +86,19 @@ let rec realRunGame whoseTurn doubles cubeOwner
             | 1 -> -1.0
             | _ -> 0.0 // impossible
         
-    match newDoubles, gameBoard (playerOne.pos + (roll ())) with
+    match newDoubles, gameBoard (pos1 + (roll ())) with
         | newDoubles, _ when newDoubles < doubles ->
             // This is an indicator that playertwo rejected the bet
-            (playerOne.pos, playerTwo.pos) ||> printfn "Rejected: %d %d"
+            (pos1, pos2) ||> printfn "Rejected: %d %d"
             2.0 ** float doubles * playerMod
         | _, newPos when newPos >= 100 ->
-            (playerOne.pos, playerTwo.pos) ||> printfn "Victory: %d %d"
+            (pos1, pos2) ||> printfn "Victory: %d %d"
             2.0 ** float newDoubles * playerMod
         | _, newPos -> 
-            playerOne.pos <- newPos
-            (playerOne.pos, playerTwo.pos) ||> printfn "%d %d"
-            realRunGame (whoseTurn + 1) newDoubles newOwner
+            (pos1, pos2) ||> printfn "%d %d"
+            realRunGame (whoseTurn + 1, newDoubles, newOwner, pos2, newPos)
                         playerTwo playerOne 
 
-let runGame = realRunGame 0 0 -1
+let runGame = realRunGame (0,0,-1,0,0)
 
 runGame (RecklessPlayer()) (RecklessPlayer()) |> printfn "%f"
