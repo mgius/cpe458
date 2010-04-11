@@ -96,8 +96,10 @@ let rec realRunGame (playerOne : Player) (playerTwo : Player)
     match newDoubles, gameBoard (playerOne.pos + (roll ())) with
         | newDoubles, _ when newDoubles < doubles ->
             // This is an indicator that playertwo rejected the bet
+            (playerOne.pos, playerTwo.pos) ||> printfn "Rejected: %d %d"
             2.0 ** float doubles * playerMod
-        | _, newPos when newPos > 100 ->
+        | _, newPos when newPos >= 100 ->
+            (playerOne.pos, playerTwo.pos) ||> printfn "Victory: %d %d"
             2.0 ** float newDoubles * playerMod
         | _, newPos -> 
             playerOne.pos <- newPos
@@ -105,4 +107,4 @@ let rec realRunGame (playerOne : Player) (playerTwo : Player)
             realRunGame playerTwo playerOne 
                         (whoseTurn + 1) newDoubles newOwner
 
-realRunGame (RecklessPlayer()) (RecklessPlayer()) 0 0 -1 |> printfn "%f"
+realRunGame (RecklessPlayer()) (ConservativePlayer()) 0 0 -1 |> printfn "%f"
