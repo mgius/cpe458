@@ -73,14 +73,19 @@ type Gius() =
     override this.shouldTake myPos hisPos = 
         true
 
-let rec realRunGame (playerOne : Player) (playerTwo : Player) whoseTurn doubles cubeOwner =
-    let newDoubles = 
-        match playerOne.shouldDouble playerOne.pos playerTwo.pos with
-            | true -> 
-                match playerOne.shouldTake playerOne.pos playerTwo.pos with
-                    | true -> doubles + 1
-                    | false -> doubles - 1
-            | false -> doubles
+let rec realRunGame (playerOne : Player) (playerTwo : Player) 
+        whoseTurn doubles cubeOwner =
+
+    // Figure out what the new doubling value is
+    let newDoubles, newOwner = 
+        match (cubeOwner = -1 || cubeOwner % 2 = whoseTurn % 2,
+               playerOne.shouldDouble playerOne.pos playerTwo.pos) with
+            | (true, true) -> 
+                match playerTwo.shouldTake playerTwo.pos playerOne.pos with
+                    | true -> (doubles + 1, whoseTurn + 1)
+                    | false -> (doubles - 1, cubeOwner)
+            // Since we only care about true true, catch-all
+            | (_, _) -> (doubles, cubeOwner)
 
     let playerMod = 
         match whoseTurn % 2 with
@@ -90,12 +95,14 @@ let rec realRunGame (playerOne : Player) (playerTwo : Player) whoseTurn doubles 
         
     match newDoubles, gameBoard (playerOne.pos + (roll ())) with
         | newDoubles, _ when newDoubles < doubles ->
-            // This is an indicator that one of the players rejected the bet
+            // This is an indicator that playertwo rejected the bet
             2.0 ** float doubles * playerMod
         | _, newPos when newPos > 100 ->
             2.0 ** float newDoubles * playerMod
         | _, newPos -> 
-            playerOne.pos <- playerOne.pos + newPos
-            realRunGame playerTwo playerOne (whoseTurn + 1) newDoubles cubeOwner
+            playerOne.pos <- newPos
+            (playerOne.pos, playerTwo.pos) ||> printfn "%d %d"
+            realRunGame playerTwo playerOne 
+                        (whoseTurn + 1) newDoubles newOwner
 
-realRunGame (RecklessPlayer()) (ConservativePlayer()) 0 0 -1 |> printfn "%f"
+realRunGame (RecklessPlayer()) (RecklessPlayer()) 0 0 -1 |> printfn "%f"
