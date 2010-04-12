@@ -59,8 +59,17 @@ type ConservativePlayer() =
 
 type Gius() =
     inherit Player()
+
+    // Averages the positions that can be achived in the next 2 turns
+    let score1 pos = 
+        float (List.fold (fun acc x -> acc + x) 0
+                   [for j in [for i in 1..6 -> gameBoard (pos + i)]
+                       -> gameBoard j]) / 6.0
+
     override this.shouldDouble myPos hisPos = 
-        true
+//        printfn "DEBUG: I'm at %d, he's at %d, %f vs %f" 
+//            myPos hisPos (score1 myPos) (score1 hisPos)
+        score1 myPos > score1 hisPos 
     override this.shouldTake myPos hisPos = 
         true
 
@@ -95,10 +104,14 @@ let rec realRunGame gameState
             (pos1, pos2) ||> printfn "Victory: %d %d"
             2.0 ** float newDoubles * playerMod
         | _, newPos -> 
-            (pos1, pos2) ||> printfn "%d %d"
+ //           (pos1, pos2) ||> printfn "DEBUG: %d %d"
             realRunGame (whoseTurn + 1, newDoubles, newOwner, pos2, newPos)
                         playerTwo playerOne 
 
 let runGame = realRunGame (0,0,-1,0,0)
 
-runGame (RecklessPlayer()) (RecklessPlayer()) |> printfn "%f"
+runGame (Gius()) (Gius()) |> printfn "%f"
+
+//for i in 0..99 do
+//    float (List.fold (fun acc x -> acc + x) 0
+//               [for j in 1..6 -> gameBoard (i + j)]) / 6.0 |> printfn "%d %f" i
