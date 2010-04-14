@@ -52,6 +52,6 @@ let runGame = realRunGame (0,0,-1,0,0)
 let sequence = seq { for i in 1..1000 -> (runGame (Gius()) (Welch())) }
 let resultSeq = Seq.countBy (fun elem -> elem) sequence
 
-"Collected results of 1000 runs of two reckless players" |> printfn "%s"
+"Collected results of 1000 runs of Gius vs Welch" |> printfn "%s"
 let printSeq seq1 = Seq.iter (printfn "%A ") seq1
 printSeq resultSeq
