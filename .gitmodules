@@ -1,0 +1,6 @@
+[submodule "shared/public"]
+	path = shared/public
+	url = git@github.com:mgius/cpe458public.git
+[submodule "shared/private"]
+	path = shared/private
+	url = git@github.com:mgius/cpe458private.git
