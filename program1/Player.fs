@@ -1,3 +1,9 @@
+(**
+* Chutes and Ladders Player definitions
+*
+* @author Nat Welch
+* @author Mark Gius
+*)
 #light
 
 module Player
@@ -42,7 +48,7 @@ type RecklessPlayer() =
         true
 
 (* 
-   Slightly more conservative playeri
+   Slightly more conservative player
 
    Takes bets if he's not too far behind
    Offers bets if he's far enough ahead
@@ -55,14 +61,23 @@ type ConservativePlayer() =
     override this.shouldTake myPos hisPos =
         myPos > hisPos + 10
 
+(*
+    Somewhat intelligent player
+
+    Takes bets if his average position over the next two turns is better
+    than his opponent
+
+*)
 type Gius() =
     inherit Player()
 
     // Averages the positions that can be achived in the next 2 turns
+    let folder doubleArray = List.fold (fun acc x -> acc + x)
     let score1 pos = 
         float (List.fold (fun acc x -> acc + x) 0
                    [for j in [for i in 1..6 -> gameBoard (pos + i)]
-                       -> gameBoard j]) / 6.0
+                       -> List.fold (fun acc2 x2 -> acc2 + x2) 0 
+                             [for h in 1..6 -> gameBoard (j + j)] ]) / 6.0
 
     override this.shouldDouble myPos hisPos = 
 //        printfn "DEBUG: I'm at %d, he's at %d, %f vs %f" 
@@ -70,6 +85,12 @@ type Gius() =
         score1 myPos > score1 hisPos 
     override this.shouldTake myPos hisPos = 
         true
+
+type Welch () =
+   inherit Player ()
+   let f pos = if pos > 50 then 5 else 3
+   override this.shouldDouble myPos hisPos = (f myPos) > (f hisPos)
+   override this.shouldTake myPos hisPos = true
 
 (*
     This player prolongs the game by always accepting bets, but never

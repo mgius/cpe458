@@ -12,7 +12,6 @@ let die = System.Random()
 
 let roll () = die.Next(1,7)
 
-
 let rec realRunGame gameState 
                     (playerOne : Player) (playerTwo : Player) =
 
@@ -50,7 +49,7 @@ let rec realRunGame gameState
 
 let runGame = realRunGame (0,0,-1,0,0)
 
-let sequence = seq { for i in 1..1000 -> (runGame (RecklessPlayer()) (RecklessPlayer())) }
+let sequence = seq { for i in 1..1000 -> (runGame (Gius()) (Welch())) }
 let resultSeq = Seq.countBy (fun elem -> elem) sequence
 
 "Collected results of 1000 runs of two reckless players" |> printfn "%s"
