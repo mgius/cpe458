@@ -73,6 +73,18 @@ type Gius() =
     override this.shouldTake myPos hisPos = 
         true
 
+(*
+    This player prolongs the game by always accepting bets, but never
+    offering them
+*)
+type ProlongingPlayer() =
+    inherit Player()
+    override this.shouldDouble myPos hisPos =
+        false
+
+    override this.shouldTake myPos hisPos =
+        true
+
 let rec realRunGame gameState 
                     (playerOne : Player) (playerTwo : Player) =
 
@@ -98,20 +110,20 @@ let rec realRunGame gameState
     match newDoubles, gameBoard (pos1 + (roll ())) with
         | newDoubles, _ when newDoubles < doubles ->
             // This is an indicator that playertwo rejected the bet
-            (pos1, pos2) ||> printfn "Rejected: %d %d"
+//            (pos1, pos2) ||> printfn "Rejected: %d %d"
             2.0 ** float doubles * playerMod
         | _, newPos when newPos >= 100 ->
-            (pos1, pos2) ||> printfn "Victory: %d %d"
+//            (pos1, pos2) ||> printfn "Victory: %d %d"
             2.0 ** float newDoubles * playerMod
         | _, newPos -> 
- //           (pos1, pos2) ||> printfn "DEBUG: %d %d"
+//            (pos1, pos2) ||> printfn "DEBUG: %d %d"
             realRunGame (whoseTurn + 1, newDoubles, newOwner, pos2, newPos)
-                        playerTwo playerOne 
+                         playerTwo playerOne 
 
 let runGame = realRunGame (0,0,-1,0,0)
 
-runGame (Gius()) (Gius()) |> printfn "%f"
+let sequence = seq { for i in 1..1000 -> (runGame (RecklessPlayer()) (RecklessPlayer())) }
+let resultSeq = Seq.countBy (fun elem -> elem) sequence
 
-//for i in 0..99 do
-//    float (List.fold (fun acc x -> acc + x) 0
-//               [for j in 1..6 -> gameBoard (i + j)]) / 6.0 |> printfn "%d %f" i
+let printSeq seq1 = Seq.iter (printfn "%A ") seq1
+printSeq resultSeq
