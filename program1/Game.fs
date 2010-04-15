@@ -1,12 +1,14 @@
 (**
-* Chutes and Ladders
+* Chutes and Ladders Main Program
 *
 * @author Nat Welch
 * @author Mark Gius
 *)
 #light
 
+
 open Player
+open MyPlayers
 
 let die = System.Random()
 

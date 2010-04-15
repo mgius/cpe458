@@ -1,5 +1,5 @@
-PROGRAM=chutes
-PRE=Player.fs
+PROGRAM=Game
+PRE=Player.fs MyPlayers.fs
 POST=
 all: $(PROGRAM)
 

@@ -4,3 +4,14 @@ simiilar, but not identical.
 
 Simply type "make" to compile the program and output an aggregated result of
 1000 runs of my player vs my partners
+
+This project works. Some of the code is more verbose, but for this project
+I strived to ignore if/while/for, etc, so sometimes I did something silly
+when it might have been more concise to use an if/while/for.  
+
+I spent very little time thinking about how to create a "perfect" player, but
+I thought about a player that would look some short amount of time into the
+future, and make decisions based on that.  So my player looks at the
+potential outcomes for the next 2 turns, and issues a double based on that.
+
+My player always accepts a challenge.  He's a drunken gambler at heart, he is.
