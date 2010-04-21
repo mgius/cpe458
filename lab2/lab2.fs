@@ -29,17 +29,20 @@ let nStepsTester = nStepsInner oneStepTester
 (nStepsTester 1.0 5) |> printfn "%f"
 
 let seqn20 = seq { for i in 1..1000 -> (nSteps 1.0 20) }
-let seqn20counted = Seq.countBy (fun elem -> elem) seqn20
+let seqn20counted = Seq.sort (Seq.countBy 
+                               (fun (elem : float) -> Math.Round(elem, 3)) 
+                                seqn20)
 
 let seqn40 = seq { for i in 1..1000 -> (nSteps 1.0 40) }
-let seqn40counted = Seq.sort (Seq.countBy (fun elem -> elem) seqn40)
+let seqn40counted = Seq.sort (Seq.countBy 
+                               (fun (elem : float) -> Math.Round(elem, 3)) 
+                                seqn40)
 
 let printSeq seq1 = Seq.iter (printf "%A \n") seq1; printfn ""
 
-printSeq seqn20
+printSeq seqn20counted
 printfn "\n\n"
-printSeq seqn40
-
+printSeq seqn40counted
 
 
 //(differ f1 1.0) |> printfn "%.9f"

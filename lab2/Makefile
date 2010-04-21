@@ -14,4 +14,4 @@ test: $(PROGRAM)
 	rm xunit.dll
 
 clean:
-	rm -f *.exe
+	rm -f *.exe *.dll
