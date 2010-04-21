@@ -1,0 +1,10 @@
+1. Develop the optionValue function, that consumes
+   - u 
+   - d
+   - r 
+   - s(sub0)
+   - and an option : double-> double that maps the value of the stock to the payoff of the option
+
+   ... and produces the options value.
+
+2. use the function and the current price of a call option on GOOG to determine the possible values of u & d

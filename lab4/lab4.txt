@@ -1,0 +1,4 @@
+1. Pick a stock
+2. get 1 year of per-day historical prices (try finance.yahoo.com)
+3. try to find u and d and p such that the price variation looks "reasonable"
+   (for a reasonable definition of "reasonable")
