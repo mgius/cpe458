@@ -1,0 +1,41 @@
+\documentclass{article}
+
+\begin{document}
+
+\begin{enumerate}
+\item an event is a sequence of heads and tails.
+
+\item an equity has an initial price and a multiplier 
+      $1 < m < 2$ to use on a head, and $(1 / m)$ on a tail. 
+      (m is a world fixed value)
+
+\item develop the function makeEquity : 
+      $\mathrm{double} \{a\} \rightarrow 
+       \mathrm{event} \rightarrow 
+       \mathrm{double}$
+      that accepts a value ``a'' and returns a random Variable.  
+      $(\mathrm{random variable} = 
+       (\mathrm{event} \rightarrow 
+        \mathrm{double})) $
+
+\item develop the function Expected : 
+      $\mathrm{int} \rightarrow 
+       \mathrm{double} \rightarrow 
+       \mathrm{randomVariable} \rightarrow
+       \mathrm{double}$
+      that computes the expected value over a given number of time steps of 
+      the given random variable by exhaustive search.
+
+\item develop the function Variance : 
+      $\mathrm{int} \rightarrow 
+       \mathrm{double} \rightarrow 
+       \mathrm{randomVariable} \rightarrow 
+       \mathrm{double}$ 
+      that computes the variance over the given number 
+      of timesteps of the given random Variable
+
+\end{enumerate}
+
+Random variable is a mapping from events to values.
+
+\end{document}
