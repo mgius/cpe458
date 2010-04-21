@@ -9,7 +9,9 @@ $(PROGRAM):
 	bash -i -c 'fsc $(INCLUDE) $(REFERENCE) $(PRE) $@.fs $(POST)'
 
 test: $(PROGRAM)
+	cp ../testing/xunit.dll .
 	bash -c 'mono ../testing/xunit.console.exe ./$(PROGRAM).exe'
+	rm xunit.dll
 
 clean:
 	rm -f *.exe
