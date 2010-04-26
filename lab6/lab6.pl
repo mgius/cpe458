@@ -41,8 +41,10 @@ sub nchoosek {
 sub optionValue {
    my ($periods, $s0, $u, $d, $r, $option) = @_;
 
-   my $p = (1 / (1 + $r) - $d ) / ($u - $d);
+   my $p = (1 / $r - $d ) / ($u - $d);
    my $q = 1 - $p;
+
+   print "$p $q\n";
 
    my $sum = 0;
    for (0..$periods) {
