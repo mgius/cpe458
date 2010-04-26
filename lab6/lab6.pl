@@ -39,24 +39,16 @@ sub nchoosek {
 }
 
 sub optionValue {
-   my $periods = shift;
-   my $s0 = shift;
-   my $u = shift;
-   my $d = shift;
-   my $r = shift;
-   my $option = shift;
+   my ($periods, $s0, $u, $d, $r, $option) = @_;
 
    my $p = (1 / (1 + $r) - $d ) / ($u - $d);
    my $q = 1 - $p;
 
-   my $interest = (1 / 1 + $r) ** $periods;
-
    my $sum = 0;
    for (0..$periods) {
-      my $left = ($p ** $_) * ($q ** ($_ - 1));
-      my $right = nchoosek($periods, $_) * 
-         $option->($s0 * ($u ** $_) * $d ** ($periods - $_));
-      $sum += $left * $right;
+      my $left = ($p ** $_) * ($q ** ($periods - $_));
+      my $value = $option->($s0 * ($u ** $_) * ($d ** ($periods - $_)));
+      $sum += $left * nchoosek($periods, $_) * $value;
    }
    return ((1 / $r) ** $periods) * $sum;
 }
