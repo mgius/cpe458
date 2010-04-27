@@ -5,15 +5,12 @@ use POSIX;
 use List::Util qw(max min);
 
 sub selloption {
-   my $strike = 60;
-   my $final = shift;
-   return max(0, $strike - $final);
+   my $strike = shift;
+   return sub {my $final = shift; return max(0, $strike - $final);};
 }
-
-sub classoption {
-   my $strike = 95;
-   my $final = shift;
-   return max(0, $strike - $final);
+sub putoption {
+   my $strike = shift;
+   return sub {my $final = shift; return max(0, $final - $strike);};
 }
 
 my %choosehash;
@@ -55,6 +52,7 @@ sub optionValue {
 
 my $runs = 1020;
 for (1..980) {
-   optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, \&selloption);
+   optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, putoption(60));
 }
-#my $val = optionValue(2, 75, 6/5, 4/5, 11/10, \&classoption);
+print optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, putoption(60));
+#print optionValue(2, 75, 6/5, 4/5, 11/10, selloption(95));
