@@ -32,19 +32,24 @@ sub fact {
    return $sum;
 
 }
+
 sub nchoosek {
    my $n = shift;
    my $k = shift;
-   return fact($n) / fact($k) * fact($n - $k);
+   $k > $n and return 0;
+   my $sum = 1;
+   for (1..$k) {
+      $sum *= $n--;
+      $sum /= $_;
+   }
+   return $sum;
 }
 
 sub optionValue {
    my ($periods, $s0, $u, $d, $r, $option) = @_;
 
-   my $p = (1 / $r - $d ) / ($u - $d);
+   my $p = ($r - $d ) / ($u - $d);
    my $q = 1 - $p;
-
-   print "$p $q\n";
 
    my $sum = 0;
    for (0..$periods) {
@@ -52,10 +57,11 @@ sub optionValue {
       my $value = $option->($s0 * ($u ** $_) * ($d ** ($periods - $_)));
       $sum += $left * nchoosek($periods, $_) * $value;
    }
+
    return ((1 / $r) ** $periods) * $sum;
 }
 
-my $runs = 2;
-#my $val = optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, \&selloption);
-my $val = optionValue(2, 75, 6/5, 4/5, 11/10, \&classoption);
+my $runs = 1020;
+my $val = optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, \&selloption);
+#my $val = optionValue(2, 75, 6/5, 4/5, 11/10, \&classoption);
 print "$val\n";
