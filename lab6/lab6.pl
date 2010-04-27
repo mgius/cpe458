@@ -1,9 +1,7 @@
 #! /usr/bin/perl
-#  started 9:11
-#  double->double == final price -> payoff
 use strict;
 use warnings;
-
+use POSIX;
 use List::Util qw(max min);
 
 sub selloption {
@@ -18,30 +16,24 @@ sub classoption {
    return max(0, $strike - $final);
 }
 
-my %factMemo;
-sub fact {
-   my $count = shift;
-   if (exists $factMemo{$count}) {
-      return $factMemo{$count};
-   }
-   my $sum = 1;
-   for (1..$count) {
-      $sum *= $_;
-   }
-   $factMemo{$count} = $sum;
-   return $sum;
-
-}
-
+my %choosehash;
 sub nchoosek {
    my $n = shift;
    my $k = shift;
    $k > $n and return 0;
+   if ($k > floor($n / 2)) {
+      $k = $n - $k;
+   }
+   my $key = "n" . $n . "k" . $k;
+   if (exists $choosehash{$key}) {
+      return $choosehash{$key};
+   }
    my $sum = 1;
    for (1..$k) {
       $sum *= $n--;
       $sum /= $_;
    }
+   $choosehash{$key} = $sum;
    return $sum;
 }
 
@@ -62,6 +54,7 @@ sub optionValue {
 }
 
 my $runs = 1020;
-my $val = optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, \&selloption);
+for (1..980) {
+   optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, \&selloption);
+}
 #my $val = optionValue(2, 75, 6/5, 4/5, 11/10, \&classoption);
-print "$val\n";
