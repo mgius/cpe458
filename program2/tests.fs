@@ -45,7 +45,20 @@ let makeERandPTest () =
    eRandom1 2 |> should equal (eRandom1 2)
    eRandom2 1000 |> should equal (eRandom2 1000)
 
-//ignore (makeERandT : unit -> event)
+ignore (makeERandT : unit -> event)
+[<Fact>]
+let makeERandTTest () =
+   let randT = makeERandT ()
+   let lastResult = ref((randT 0))
+   let results = seq { for i in 1..1000 -> (randT i) }
+   
+   let aggregate = Seq.countBy (fun elem ->
+                                  let temp = (!lastResult = elem)
+                                  lastResult := elem
+                                  temp)
+                               results
+   // TODO
+
 //ignore (forceEParts : int -> bool array -> event -> event)
 //ignore (doubleToRV : double -> rv)
 //ignore (rvNCountHeads : int -> rv)
