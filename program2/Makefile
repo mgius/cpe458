@@ -1,18 +1,25 @@
-FSC=mono /home/mgius/fsharp/bin/fsc.exe --resident
+HOME=/home/mgius
+FSHARP=$(HOME)/fsharp
+
+FSC=mono $(FSHARP)/bin/fsc.exe --resident
+XUNIT=mono $(FSHARP)/testing/xunit.console.exe
+XUNITDLL=$(FSHARP)/testing/xunit.dll
+
 PROGRAM=deltahedging
+TESTS=tests
 PRE=
 POST=
-INCLUDE=-I:/home/mgius/programs/cpe458/testing
+INCLUDE=-I:$(FSHARP)/testing/
 REFERENCE=-r:xunit.dll -r:FsTest.dll
 all: $(PROGRAM)
 
 $(PROGRAM):
 	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $@.fs $(POST)
 
-test: $(PROGRAM)
-	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs tests.fs $(POST)
-	cp ../testing/xunit.dll .
-	mono ../testing/xunit.console.exe ./tests.exe
+test:
+	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs $(TESTS).fs $(POST)
+	cp $(XUNITDLL) .
+	mono $(FSHARP)/testing/xunit.console.exe ./tests.exe
 	rm xunit.dll
 
 clean:
