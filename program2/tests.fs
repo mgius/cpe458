@@ -34,7 +34,17 @@ let makeERandomTest () =
    eRandom1 2 |> should equal (eRandom1 2)
    eRandom2 1000 |> should equal (eRandom2 1000)
 
-//ignore (makeERandP : double -> event)
+ignore (makeERandP : double -> event)
+[<Fact>]
+let makeERandPTest () =
+   let eRandom1 = makeERandP 0.4
+   let eRandom2 = makeERandP 0.9
+   eRandom1 1 |> should equal (eRandom1 1)
+   eRandom1 1 |> should equal (eRandom1 1)
+   eRandom1 2 |> should equal (eRandom1 2)
+   eRandom1 2 |> should equal (eRandom1 2)
+   eRandom2 1000 |> should equal (eRandom2 1000)
+
 //ignore (makeERandT : unit -> event)
 //ignore (forceEParts : int -> bool array -> event -> event)
 //ignore (doubleToRV : double -> rv)
