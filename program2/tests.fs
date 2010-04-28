@@ -21,9 +21,19 @@ ignore (eAlternating : event)
 let eAlternatingTest () =
    eAlternating 0 |> should equal true
    eAlternating 1 |> should equal false
-   eAlternating 1 |> should not (equal (eAlternating 2))
+   (eAlternating 1) |> should not_equal (eAlternating 2)
 
-//ignore (makeERandom : unit -> event)
+ignore (makeERandom : unit -> event)
+[<Fact>]
+let makeERandomTest () =
+   let eRandom1 = makeERandom ()
+   let eRandom2 = makeERandom ()
+   eRandom1 1 |> should equal (eRandom1 1)
+   eRandom1 1 |> should equal (eRandom1 1)
+   eRandom1 2 |> should equal (eRandom1 2)
+   eRandom1 2 |> should equal (eRandom1 2)
+   eRandom2 1000 |> should equal (eRandom2 1000)
+
 //ignore (makeERandP : double -> event)
 //ignore (makeERandT : unit -> event)
 //ignore (forceEParts : int -> bool array -> event -> event)
