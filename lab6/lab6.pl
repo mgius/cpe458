@@ -4,11 +4,11 @@ use warnings;
 use POSIX;
 use List::Util qw(max min);
 
-sub selloption {
+sub putoption {
    my $strike = shift;
    return sub {my $final = shift; return max(0, $strike - $final);};
 }
-sub putoption {
+sub calloption {
    my $strike = shift;
    return sub {my $final = shift; return max(0, $final - $strike);};
 }
@@ -51,8 +51,9 @@ sub optionValue {
 }
 
 my $runs = 1020;
+my $option = putoption(60);
 for (1..980) {
-   optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, putoption(60));
+   optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, $option);
 }
-print optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, putoption(60));
-#print optionValue(2, 75, 6/5, 4/5, 11/10, selloption(95));
+print optionValue($runs, 50, 1.004, 1 / 1.004, 1.0001, calloption(60)) . "\n";
+print optionValue(2, 75, 6/5, 4/5, 11/10, putoption(95)) . "\n";
