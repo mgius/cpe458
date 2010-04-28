@@ -1,16 +1,26 @@
+HOME=/home/mgius
+FSHARP=$(HOME)/fsharp
+
+FSC=mono $(FSHARP)/bin/fsc.exe --resident
+XUNIT=mono $(FSHARP)/testing/xunit.console.exe
+XUNITDLL=$(FSHARP)/testing/xunit.dll
+
 PROGRAM=lab2
+TESTS=tests
 PRE=
 POST=
-INCLUDE=-I:/home/mgius/programs/cpe458/testing
+INCLUDE=-I:$(FSHARP)/testing/
 REFERENCE=-r:xunit.dll -r:FsTest.dll
+
 all: $(PROGRAM)
 
 $(PROGRAM):
-	bash -i -c 'fsc $(INCLUDE) $(REFERENCE) $(PRE) $@.fs $(POST)'
+	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $@.fs $(POST)
 
-test: $(PROGRAM)
-	cp ../testing/xunit.dll .
-	bash -c 'mono ../testing/xunit.console.exe ./$(PROGRAM).exe'
+test:
+	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST)
+	cp $(XUNITDLL) .
+	mono $(FSHARP)/testing/xunit.console.exe ./$(PROGRAM).exe
 	rm xunit.dll
 
 clean:

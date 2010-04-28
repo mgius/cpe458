@@ -1,10 +1,28 @@
 #light
+open Xunit
+open FsxUnit.Syntax
+open System
+
 open deltahedging
 
-(* These calls verify the types of the functions to handin *)
+(* for each function, verify the signature then test it *)
 ignore (eAllHeads : event)
+[<Fact>]
+let eAllHeadsTest () =
+   eAllHeads () |> should equal true
+
 ignore (eAllTails : event)
-//ignore (eAlternating : event)
+[<Fact>]
+let eAllTailsTest () =
+   eAllTails () |> should equal false
+
+ignore (eAlternating : event)
+[<Fact>]
+let eAlternatingTest () =
+   eAlternating 0 |> should equal true
+   eAlternating 1 |> should equal false
+   eAlternating 1 |> should not (equal (eAlternating 2))
+
 //ignore (makeERandom : unit -> event)
 //ignore (makeERandP : double -> event)
 //ignore (makeERandT : unit -> event)
