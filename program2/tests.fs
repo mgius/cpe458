@@ -57,7 +57,10 @@ let makeERandTTest () =
                                   lastResult := elem
                                   temp)
                                results
-   // TODO
+   let findFunc (elem : bool * int) = fst elem
+   snd (Seq.find (fun elem -> fst elem) aggregate) > 650 |> should equal true
+   
+
 
 //ignore (forceEParts : int -> bool array -> event -> event)
 //ignore (doubleToRV : double -> rv)
