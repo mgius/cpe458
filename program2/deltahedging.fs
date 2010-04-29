@@ -43,3 +43,11 @@ let makeERandT () =
                    result
 
    eRandom 
+
+let forceEParts t ba anEvent =
+   let eRandom timeStep =
+      if timeStep > t + (Array.length ba) 
+        then (anEvent timeStep)
+        else 
+         ba.[timeStep - t]
+   eRandom
