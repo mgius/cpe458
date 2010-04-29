@@ -97,6 +97,9 @@ let forceEPartsTest () =
    let result = eRandom3 1
    let eRandom4 = forceEParts 1 [|not result|] eRandom3
    result |> should not_equal (eRandom4 1)
+
+   (* Original has not changed *)
+   result |> should equal (eRandom3 1)
    
 
 //ignore (doubleToRV : double -> rv)
