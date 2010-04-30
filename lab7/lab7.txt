@@ -1,0 +1,8 @@
+1. start matlab
+2. Download Daily closes of AAPL over the last 2 years
+3. Use MatLAB to compute correlation between pairs of successive days' 
+   _MULTIPLES_, that is Ssub(n+1) / Ssub(n) and Ssub(n+2) / Ssub(n+1)
+
+   load('a.txt', A) 
+   or use
+   File > Import
