@@ -1,3 +1,7 @@
+(* Program 2: Testing Suite
+   Mark Gius
+   Collaboration with Jesse Tyler
+ *)
 #light
 open Xunit
 open FsxUnit.Syntax
@@ -7,17 +11,17 @@ open deltahedging
 
 (* for each function, verify the signature then test it *)
 [<Fact>]
-let eAllHeadsTest () =
+let test_eAllHeads () =
    ignore (eAllHeads : event)
    eAllHeads () |> should equal true
 
 [<Fact>]
-let eAllTailsTest () =
+let test_eAllTails () =
    ignore (eAllTails : event)
    eAllTails () |> should equal false
 
 [<Fact>]
-let eAlternatingTest () =
+let test_eAlternating () =
    (* The real requirement of alternating is that it alternates.  So
       I shouldn't test if specific points are specific states *)
    ignore (eAlternating : event)
@@ -25,7 +29,7 @@ let eAlternatingTest () =
    (eAlternating i |> should not_equal (eAlternating (i+1)))
 
 [<Fact>]
-let makeERandomTest () =
+let test_makeERandom () =
    ignore (makeERandom : unit -> event)
    let eRandom1 = makeERandom ()
    let eRandom2 = makeERandom ()
@@ -46,7 +50,7 @@ let makeERandomTest () =
    trues < 550 |> should equal true
 
 [<Fact>]
-let makeERandPTest () =
+let test_makeERandP () =
    ignore (makeERandP : double -> event)
    let eRandom1 = makeERandP 0.4
    let eRandom2 = makeERandP 0.9
@@ -68,7 +72,7 @@ let makeERandPTest () =
    
 
 [<Fact>]
-let makeERandTTest () =
+let test_makeERandT () =
    (* Run this 1000 times, verify that at least 650 of the 
       runs are matching the previous run 
       TODO: make it one std dev *)
@@ -86,7 +90,7 @@ let makeERandTTest () =
    snd (Seq.find (fun elem -> fst elem) aggregate) > 650 |> should equal true
    
 [<Fact>]
-let forceEPartsTest () =
+let test_forceEParts () =
    ignore (forceEParts : int -> bool array -> event -> event)
    (* Create a random variable, call it a number of times, then
       overlay an array and check to see if it took hold *)
@@ -105,9 +109,27 @@ let forceEPartsTest () =
    (* Original has not changed *)
    result |> should equal (eRandom3 1)
    
+[<Fact>]
+let test_doubleToRV () = 
+   ignore (doubleToRV : double -> rv)
+   let randomV1 = doubleToRV 1.23
+   randomV1 (eAllTails 1) |> should equal 1.23
+   randomV1 (eAllHeads 1) |> should equal 1.23
 
-//ignore (doubleToRV : double -> rv)
-//ignore (rvNCountHeads : int -> rv)
+[<Fact>]
+let test_rvNCountHeads () =
+   ignore (rvNCountHeads : int -> rv)
+   let headsCount1 = rvNCountHeads 100
+   headsCount1 eAllHeads |> should equal 100.0
+   headsCount1 eAllTails |> should equal 0.0
+
+[<Fact>]
+let test_rvNCountTails () =
+   ignore (rvNCountTails : int -> rv)
+   let headsCount1 = rvNCountTails 100
+   headsCount1 eAllTails |> should equal 100.0
+   headsCount1 eAllHeads |> should equal 0.0
+
 //ignore (rvNCountTails : int -> rv)
 //ignore (rvNStock : double -> double -> double -> rvseq)
 //ignore (rvPathD : rvseq)
