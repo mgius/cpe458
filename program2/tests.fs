@@ -99,8 +99,9 @@ let test_forceEParts () =
    for i = 1 to 10 do ignore (eRandom1 i)
    let eRandom2 = forceEParts 2 array1 eRandom1
    for i = 2 to 6 do (eRandom2 i) |> should equal array1.[i-2]
-   (* Test for bug of mine.  Wasn't handling timestep < the overlay start *)
+   (* Test for bug of mine.  Wasn't handling timestep <> the overlay start *)
    (eRandom2 1) |> should equal (eRandom2 1)
+   (eRandom2 7) |> should equal (eRandom2 7)
 
    (* Create a random variable, grab a result, invert it, and overlay it *)
    let eRandom3 = makeERandom ()
