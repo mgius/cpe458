@@ -18,10 +18,11 @@ let eAllTailsTest () =
 
 [<Fact>]
 let eAlternatingTest () =
+   (* The real requirement of alternating is that it alternates.  So
+      I shouldn't test if specific points are specific states *)
    ignore (eAlternating : event)
-   eAlternating 0 |> should equal true
-   eAlternating 1 |> should equal false
-   (eAlternating 1) |> should not_equal (eAlternating 2)
+   for i=0 to 100 do
+   (eAlternating i |> should not_equal (eAlternating (i+1)))
 
 [<Fact>]
 let makeERandomTest () =
@@ -35,7 +36,8 @@ let makeERandomTest () =
    eRandom2 1000 |> should equal (eRandom2 1000)
 
    (* Run the first random variable 1000 times, and verify
-      that the number of trues is roughly 500 *)
+      that the number of trues is roughly 500 
+      TODO: make it within 1 std dev*)
    let results = seq { for i in 1..1000 -> (eRandom1 i) }
    let aggregate = Seq.countBy (fun elem -> elem) results
    let findFunc (elem : bool * int) = fst elem
@@ -54,7 +56,8 @@ let makeERandPTest () =
    eRandom1 2 |> should equal (eRandom1 2)
 
    (* Run the first random variable 1000 times, and verify
-      that the number of trues is roughly 400 *)
+      that the number of trues is roughly 400 
+      TODO: make it within 1 std dev *)
    let results = seq { for i in 1..1000 -> (eRandom1 i) }
    let aggregate = Seq.countBy (fun elem -> elem) results
    let findFunc (elem : bool * int) = fst elem
@@ -67,7 +70,8 @@ let makeERandPTest () =
 [<Fact>]
 let makeERandTTest () =
    (* Run this 1000 times, verify that at least 650 of the 
-      runs are matching the previous run *)
+      runs are matching the previous run 
+      TODO: make it one std dev *)
    ignore (makeERandT : unit -> event)
    let randT = makeERandT ()
    let lastResult = ref((randT 0))
@@ -88,7 +92,7 @@ let forceEPartsTest () =
       overlay an array and check to see if it took hold *)
    let eRandom1 = makeERandom ()
    let array1 = [|true; false; true; false; true;|]
-   for i = 1 to 10 do (eRandom1 i)
+   for i = 1 to 10 do ignore (eRandom1 i)
    let eRandom2 = forceEParts 2 array1 eRandom1
    for i = 2 to 6 do (eRandom2 i) |> should equal array1.[i-2]
 
