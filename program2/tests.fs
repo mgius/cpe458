@@ -95,10 +95,12 @@ let test_forceEParts () =
    (* Create a random variable, call it a number of times, then
       overlay an array and check to see if it took hold *)
    let eRandom1 = makeERandom ()
-   let array1 = [|true; false; true; false; true;|]
+   let array1 = [|true; false; true; true; false;|]
    for i = 1 to 10 do ignore (eRandom1 i)
    let eRandom2 = forceEParts 2 array1 eRandom1
    for i = 2 to 6 do (eRandom2 i) |> should equal array1.[i-2]
+   (* Test for bug of mine.  Wasn't handling timestep < the overlay start *)
+   (eRandom2 1) |> should equal (eRandom2 1)
 
    (* Create a random variable, grab a result, invert it, and overlay it *)
    let eRandom3 = makeERandom ()
@@ -108,7 +110,7 @@ let test_forceEParts () =
 
    (* Original has not changed *)
    result |> should equal (eRandom3 1)
-   
+
 [<Fact>]
 let test_doubleToRV () = 
    ignore (doubleToRV : double -> rv)
@@ -122,6 +124,7 @@ let test_rvNCountHeads () =
    let headsCount1 = rvNCountHeads 100
    headsCount1 eAllHeads |> should equal 100.0
    headsCount1 eAllTails |> should equal 0.0
+   headsCount1 (forceEParts 2 [|false|] eAllHeads) |> should equal 99.0
 
 [<Fact>]
 let test_rvNCountTails () =
@@ -129,6 +132,7 @@ let test_rvNCountTails () =
    let headsCount1 = rvNCountTails 100
    headsCount1 eAllTails |> should equal 100.0
    headsCount1 eAllHeads |> should equal 0.0
+   headsCount1 (forceEParts 2 [|true|] eAllTails) |> should equal 99.0
 
 //ignore (rvNCountTails : int -> rv)
 //ignore (rvNStock : double -> double -> double -> rvseq)
