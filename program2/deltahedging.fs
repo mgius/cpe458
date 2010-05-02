@@ -8,6 +8,7 @@ module deltahedging
 type event1 = bool
 type event = int -> event1
 type rv = event -> double
+type rvseq = int -> rv
 
 let eAllHeads timeStep = 
    true
@@ -74,4 +75,9 @@ let rvNCountSomething something i =
 let rvNCountHeads = rvNCountSomething true 
 let rvNCountTails = rvNCountSomething false 
 
-
+let rvNStock u d initial timeSteps =
+   let randomV (ev : event) =
+      let results = seq { for i in 0..(timeSteps-1) -> (ev i)}
+      double (Seq.fold (fun acc x -> if x then acc * u else acc * d) 
+                        initial results)
+   randomV

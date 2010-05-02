@@ -135,8 +135,12 @@ let test_rvNCountTails () =
    headsCount1 eAllHeads |> should equal 0.0
    headsCount1 (forceEParts 2 [|true|] eAllTails) |> should equal 99.0
 
-//ignore (rvNCountTails : int -> rv)
-//ignore (rvNStock : double -> double -> double -> rvseq)
+[<Fact>]
+let test_rvNStock () =
+   ignore (rvNStock : double -> double -> double -> rvseq)
+   let rvNStock1 = rvNStock 1.004 0.999 1.0
+   ignore
+
 //ignore (rvPathD : rvseq)
 //ignore (unaryLiftRV : (double -> double) -> rv -> rv)
 //ignore (binaryLiftRV : (double -> double -> double) -> rv -> rv -> rv)
