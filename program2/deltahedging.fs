@@ -66,18 +66,28 @@ let doubleToRV f =
 let rvNCountSomething something i = 
    let randomV (ev : event) = 
       let results = seq { for j in 0..(i-1) -> (ev j) }
-      let aggregate = Seq.countBy (fun elem -> elem) results
-      match Seq.tryFind (fun elem -> something = (fst elem)) aggregate with
-         | Some((_, count)) -> double count
-         | None -> 0.0
+      //let aggregate = Seq.countBy (fun elem -> elem) results
+      //match Seq.tryFind (fun elem -> something = (fst elem)) aggregate with
+      //   | Some((_, count)) -> double count
+      //   | None -> 0.0
+      double (Seq.fold (fun acc x -> if x = something then acc + 1 else acc) 
+                       0 results)
    randomV
 
 let rvNCountHeads = rvNCountSomething true 
 let rvNCountTails = rvNCountSomething false 
 
-let rvNStock u d initial timeSteps =
+let rvNStock (u : float) (d : float) (initial : float) timeSteps =
    let randomV (ev : event) =
       let results = seq { for i in 0..(timeSteps-1) -> (ev i)}
       double (Seq.fold (fun acc x -> if x then acc * u else acc * d) 
                         initial results)
+   randomV
+
+
+let rvPathD timeStep = 
+   let randomV (ev : event) = 
+      let results = seq { for i in (timeStep%3)..3..timeStep -> (ev i) }
+      double (Seq.fold (fun acc x -> if x then acc + 10 else acc) 
+                       0 results)
    randomV

@@ -138,10 +138,31 @@ let test_rvNCountTails () =
 [<Fact>]
 let test_rvNStock () =
    ignore (rvNStock : double -> double -> double -> rvseq)
-   let rvNStock1 = rvNStock 1.004 0.999 1.0
-   ignore
+   let rnVStock1 = rvNStock 1.004 0.999 1.0 1
+   rnVStock1 eAllHeads |> should equal 1.004
+   rnVStock1 eAllTails |> should equal 0.999
+   let rnVStock2 = rvNStock 2.0 1.0 1.0 10
+   rnVStock2 eAllHeads |> should equal (1.0 * 2.0 ** 10.0)
+   rnVStock2 eAllTails |> should equal (1.0 * 1.0 ** 10.0)
 
-//ignore (rvPathD : rvseq)
+   let forceArray = [|true; true; true; true; false; 
+                      false; false; false; false; false|]
+   rnVStock2 (forceEParts 0 forceArray eAllTails) 
+      |> should equal (1.0 * 2.0 ** 4.0)
+
+[<Fact>]
+let tset_rvPathD () =
+   ignore (rvPathD : rvseq)
+   let forceArray = [|false; false; true; false; true; true; false|]
+   let rvPathD1 = rvPathD 6
+   let rvPathD2 = rvPathD 5
+   let rvPathD3 = rvPathD 4
+   let eventGen = (forceEParts 0 forceArray eAllTails)
+   rvPathD1 eventGen |> should equal 0.0
+   rvPathD2 eventGen |> should equal 20.0
+   rvPathD3 eventGen |> should equal 10.0
+   
+
 //ignore (unaryLiftRV : (double -> double) -> rv -> rv)
 //ignore (binaryLiftRV : (double -> double -> double) -> rv -> rv -> rv)
 //ignore (putOptionPayoff : double -> option)
