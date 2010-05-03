@@ -9,6 +9,7 @@ type event1 = bool
 type event = int -> event1
 type rv = event -> double
 type rvseq = int -> rv
+type option = double -> double
 
 let eAllHeads timeStep = 
    true
@@ -101,3 +102,9 @@ let binaryLiftRV doubleFunc randVarA randVarB =
    let randomV (ev : event) =
       doubleFunc (randVarA ev) (randVarB ev)
    randomV
+
+let putOptionPayoff strike stock = 
+   max 0.0 (strike - stock)
+
+let callOptionPayoff strike stock = 
+   max 0.0 (stock - strike)

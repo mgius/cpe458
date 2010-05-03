@@ -180,8 +180,14 @@ let test_binaryLiftRV () =
    (binaryLiftRV doubleFunc headsCount tailsCount) eventGen 
       |> should equal 3.0
 
-//ignore (putOptionPayoff : double -> option)
-//ignore (callOptionPayoff : double -> option)
+let test_Payoffs () =
+   ignore (putOptionPayoff : double -> option)
+   ignore (callOptionPayoff : double -> option)
+   putOptionPayoff 1.0 2.0 |> should equal 0.0
+   putOptionPayoff 2.0 1.0 |> should equal 1.0
+   callOptionPayoff 1.0 2.0 |> should equal 1.0
+   callOptionPayoff 2.0 1.0 |> should equal 0.0
+
 //ignore (tabulateN : (int -> 'a) -> int -> 'a list)
 //ignore (mean : double list -> double)
 //ignore (sampleVar : double list -> double)
