@@ -130,10 +130,10 @@ let test_rvNCountHeads () =
 [<Fact>]
 let test_rvNCountTails () =
    ignore (rvNCountTails : int -> rv)
-   let headsCount1 = rvNCountTails 100
-   headsCount1 eAllTails |> should equal 100.0
-   headsCount1 eAllHeads |> should equal 0.0
-   headsCount1 (forceEParts 2 [|true|] eAllTails) |> should equal 99.0
+   let tailsCount1 = rvNCountTails 100
+   tailsCount1 eAllTails |> should equal 100.0
+   tailsCount1 eAllHeads |> should equal 0.0
+   tailsCount1 (forceEParts 2 [|true|] eAllTails) |> should equal 99.0
 
 [<Fact>]
 let test_rvNStock () =
@@ -151,7 +151,7 @@ let test_rvNStock () =
       |> should equal (1.0 * 2.0 ** 4.0)
 
 [<Fact>]
-let tset_rvPathD () =
+let test_rvPathD () =
    ignore (rvPathD : rvseq)
    let forceArray = [|false; false; true; false; true; true; false|]
    let rvPathD1 = rvPathD 6
@@ -159,12 +159,27 @@ let tset_rvPathD () =
    let rvPathD3 = rvPathD 4
    let eventGen = (forceEParts 0 forceArray eAllTails)
    rvPathD1 eventGen |> should equal 0.0
-   rvPathD2 eventGen |> should equal 20.0
-   rvPathD3 eventGen |> should equal 10.0
+   rvPathD2 eventGen |> should equal 10.0
+   rvPathD3 eventGen |> should equal 0.0
    
+[<Fact>]
+let test_unaryLiftRV () =
+   ignore (unaryLiftRV : (double -> double) -> rv -> rv)
+   let headsCount = rvNCountHeads 100
+   let doubleFunc input = input * 12.2
+   (unaryLiftRV doubleFunc headsCount) eAllHeads |> should equal 1220.0
+   
+[<Fact>]
+let test_binaryLiftRV () =
+   ignore (binaryLiftRV : (double -> double -> double) -> rv -> rv -> rv)
+   let headsCount = rvNCountHeads 3
+   let tailsCount = rvNCountTails 7
+   let doubleFunc input1 input2 = input2 - input1
+   let forceArray = [|false; false; true; false; true; true; false|]
+   let eventGen = (forceEParts 0 forceArray eAllTails)
+   (binaryLiftRV doubleFunc headsCount tailsCount) eventGen 
+      |> should equal 3.0
 
-//ignore (unaryLiftRV : (double -> double) -> rv -> rv)
-//ignore (binaryLiftRV : (double -> double -> double) -> rv -> rv -> rv)
 //ignore (putOptionPayoff : double -> option)
 //ignore (callOptionPayoff : double -> option)
 //ignore (tabulateN : (int -> 'a) -> int -> 'a list)

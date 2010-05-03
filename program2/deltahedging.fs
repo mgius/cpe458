@@ -87,7 +87,17 @@ let rvNStock (u : float) (d : float) (initial : float) timeSteps =
 
 let rvPathD timeStep = 
    let randomV (ev : event) = 
-      let results = seq { for i in (timeStep%3)..3..timeStep -> (ev i) }
+      let results = seq { for i in (timeStep%3)..3..(timeStep-3) -> (ev i) }
       double (Seq.fold (fun acc x -> if x then acc + 10 else acc) 
                        0 results)
+   randomV
+
+let unaryLiftRV doubleFunc randVar =
+   let randomV (ev : event) =
+      doubleFunc (randVar ev)
+   randomV
+
+let binaryLiftRV doubleFunc randVarA randVarB =
+   let randomV (ev : event) =
+      doubleFunc (randVarA ev) (randVarB ev)
    randomV
