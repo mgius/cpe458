@@ -10,15 +10,16 @@ TESTS=tests
 PRE=
 POST=
 INCLUDE=-I:$(FSHARP)/testing/
-REFERENCE=-r:xunit.dll -r:FsTest.dll
+REFERENCE=
+TESTREFERENCE=-r:xunit.dll -r:FsTest.dll
 
-all: $(PROGRAM)
+all: $(PROGRAM).dll
 
-$(PROGRAM):
-	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $@.fs $(POST)
+$(PROGRAM).dll: $(PROGRAM).fs
+	$(FSC) -a $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST)
 
-test:
-	$(FSC) $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs $(TESTS).fs $(POST)
+test: $(PROGRAM).dll
+	$(FSC) $(INCLUDE) $(TESTREFERENCE) $(PRE) -r $(PROGRAM).dll $(TESTS).fs $(POST)
 	cp $(XUNITDLL) .
 	mono $(FSHARP)/testing/xunit.console.exe ./tests.exe
 	rm xunit.dll

@@ -147,7 +147,7 @@ let test_rvNStock () =
 
    let forceArray = [|true; true; true; true; false; 
                       false; false; false; false; false|]
-   rnVStock2 (forceEParts 0 forceArray eAllTails) 
+   rnVStock2 (forceEParts 1 forceArray eAllTails) 
       |> should equal (1.0 * 2.0 ** 4.0)
 
 [<Fact>]
@@ -180,6 +180,7 @@ let test_binaryLiftRV () =
    (binaryLiftRV doubleFunc headsCount tailsCount) eventGen 
       |> should equal 3.0
 
+[<Fact>]
 let test_Payoffs () =
    ignore (putOptionPayoff : double -> option)
    ignore (callOptionPayoff : double -> option)
@@ -188,9 +189,16 @@ let test_Payoffs () =
    callOptionPayoff 1.0 2.0 |> should equal 1.0
    callOptionPayoff 2.0 1.0 |> should equal 0.0
 
-//ignore (tabulateN : (int -> 'a) -> int -> 'a list)
-//ignore (mean : double list -> double)
-//ignore (sampleVar : double list -> double)
-//ignore (sampleHeads : int -> double)
-//ignore (sampleHeadsMeanAndVariance : int -> int -> (double * double))
-//ignore (experiment1 : (double * double) list)
+[<Fact>]
+let test_optionValue () =
+   ignore (optionValue : stockmodel -> int -> option -> rvseq)
+   let initial, u, d, r = ( 75.0, 3.0, 1.0, 2.0)
+   optionValueHelper 2 initial u d r (putOptionPayoff 95.0) |>
+      should equal 1.25
+
+   let optionValue1 = optionValue (u, d, r, initial) 2 (putOptionPayoff 95.0)
+   optionValue1 0 eAllTails
+   // TODO: Better test cases here.  Seriously now
+   
+// ignore (delta : rvseq -> rvseq -> rvseq)
+// ignore (illustration : stockmodel -> int -> option -> event -> ())

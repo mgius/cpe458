@@ -10,6 +10,7 @@ type event = int -> event1
 type rv = event -> double
 type rvseq = int -> rv
 type option = double -> double
+type stockmodel = (double * double * double * double) // u, d, 1+r, and S_0
 
 let eAllHeads timeStep = 
    true
@@ -80,9 +81,10 @@ let rvNCountTails = rvNCountSomething false
 
 let rvNStock (u : float) (d : float) (initial : float) timeSteps =
    let randomV (ev : event) =
-      let results = seq { for i in 0..(timeSteps-1) -> (ev i)}
-      double (Seq.fold (fun acc x -> if x then acc * u else acc * d) 
-                        initial results)
+      let results = seq { for i in 1..(timeSteps) -> (ev i)}
+      if timeSteps = 0 then initial else 
+         double (Seq.fold (fun acc x -> if x then acc * u else acc * d) 
+                           initial results)
    randomV
 
 
@@ -108,3 +110,36 @@ let putOptionPayoff strike stock =
 
 let callOptionPayoff strike stock = 
    max 0.0 (stock - strike)
+
+let nchoosek (n : int) k = 
+   if n < k then 0
+   else
+      let newK = if k > (n / 2) then n - k else k
+      let myS = seq { for i in 1..newK -> (n-(i-1), i) } 
+      Seq.fold (fun acc x -> acc * fst x / snd x ) 1 myS
+
+let optionValueHelper (periods : int) (s0 : double) 
+                (u : double) (d : double) (r : double) 
+                (opt : double -> double) =
+   let p = (r - d) / (u - d)
+   let q = 1.0 - p
+
+   let myS = seq { 0..periods }
+   let left iter = (p ** iter) * (q ** ((double periods) - iter))
+   let right iter = opt (s0 * (u ** iter) * (d ** ((double periods) - iter)))
+   let sum = Seq.fold 
+              (fun acc x -> 
+               (left (double x)) * 
+               (double (nchoosek periods x)) * 
+               (right (double x)) + 
+               acc)
+              0.0 myS
+   
+   ((1.0 / r) ** (double periods)) * sum
+
+let optionValue stockmodel timeperiods anOption =
+   let (u, d, oneplusr, initial) = stockmodel
+   let randomVSeq i (ev : event) =
+      let currentValue = rvNStock u d initial i ev
+      optionValueHelper (timeperiods - i) currentValue u d oneplusr anOption
+   randomVSeq
