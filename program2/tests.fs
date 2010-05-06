@@ -9,6 +9,10 @@ open System
 
 open deltahedging
 
+(* This idea was borrowed from kfinn after talking about whether or not
+   xunit had some sort of tolerance *)
+let equalWithTolerance tolerance left right =
+   (abs (right - left)) < tolerance
 (* for each function, verify the signature then test it *)
 [<Fact>]
 let test_eAllHeads () =
@@ -192,13 +196,43 @@ let test_Payoffs () =
 [<Fact>]
 let test_optionValue () =
    ignore (optionValue : stockmodel -> int -> option -> rvseq)
-   let initial, u, d, r = ( 75.0, 3.0, 1.0, 2.0)
-   optionValueHelper 2 initial u d r (putOptionPayoff 95.0) |>
+   let initial1, u1, d1, r1 = (75.0, 3.0, 1.0, 2.0)
+   optionValueHelper 2 initial u1 d1 r1 (putOptionPayoff 95.0) |>
       should equal 1.25
 
-   let optionValue1 = optionValue (u, d, r, initial) 2 (putOptionPayoff 95.0)
-   optionValue1 0 eAllTails
-   // TODO: Better test cases here.  Seriously now
+   let optionValue1 = optionValue (u1, d1, r1, initial1) 
+                                  2 (putOptionPayoff 95.0)
+   optionValue1 0 eAllTails |> should equal 1.25
+
+   let initial2, u2, d2, r2 = (75.0, 6.0/5.0, 4.0/5.0, 11.0/10.0)
+
+   let optionValue2 = optionValue (u2, d2, r2, initial2) 
+                                  2 (putOptionPayoff 95.0)
+   equalWithTolerance 0.00001 9.55578 (optionValue2 0 eAllTails) |> 
+      should equal true
    
-// ignore (delta : rvseq -> rvseq -> rvseq)
+[<Fact>]
+let test_delta () =
+   ignore (delta : rvseq -> rvseq -> rvseq)
+   (* I apologize for the pain that you are about to see 
+      These numbers were hand calculated.  A picture of the board is 
+      available at http://ky13.net/0gxV 
+   *)
+   let initial, u, d, r, expiry = (100.0, 2.0, 0.5, 1.1, 3)
+   let anOption = (callOptionPayoff 190.0)
+
+   let events = forceEParts 1 [|true; true; false|] eAllTails
+   let optionValue = optionValue (u, d, r, initial) expiry anOption
+   let stockValue = rvNStock u d initial
+
+   let myDelta = delta stockValue optionValue 
+   (equalWithTolerance 0.0002 -0.5554 (myDelta 0 events))
+      |> should equal true
+
+   (equalWithTolerance 0.001 -0.745 (myDelta 1 events))
+      |> should equal true
+
+   (equalWithTolerance 0.1 -1.0 (myDelta 2 events))
+      |> should equal true
+
 // ignore (illustration : stockmodel -> int -> option -> event -> ())

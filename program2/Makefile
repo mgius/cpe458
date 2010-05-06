@@ -4,12 +4,13 @@ FSHARP=$(HOME)/fsharp
 FSC=mono $(FSHARP)/bin/fsc.exe --resident
 XUNIT=mono $(FSHARP)/testing/xunit.console.exe
 XUNITDLL=$(FSHARP)/testing/xunit.dll
+TESTINGDLLS=$(FSHARP)/testing
 
 PROGRAM=deltahedging
 TESTS=tests
 PRE=
 POST=
-INCLUDE=-I:$(FSHARP)/testing/
+INCLUDE=-I:$(TESTINGDLLS)
 REFERENCE=
 TESTREFERENCE=-r:xunit.dll -r:FsTest.dll
 
@@ -17,6 +18,10 @@ all: $(PROGRAM).dll
 
 $(PROGRAM).dll: $(PROGRAM).fs
 	$(FSC) -a $(INCLUDE) $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST)
+
+run: $(PROGRAM).dll
+	$(FSC) $(PROGRAM).fs
+	mono ./$(PROGRAM).exe
 
 test: $(PROGRAM).dll
 	$(FSC) $(INCLUDE) $(TESTREFERENCE) $(PRE) -r $(PROGRAM).dll $(TESTS).fs $(POST)

@@ -143,3 +143,28 @@ let optionValue stockmodel timeperiods anOption =
       let currentValue = rvNStock u d initial i ev
       optionValueHelper (timeperiods - i) currentValue u d oneplusr anOption
    randomVSeq
+
+let delta stockValues optionValues i (ev : event) =
+   let nextTailsEvent = forceEParts (i+1) [|false|] ev
+   let nextHeadsEvent = forceEParts (i+1) [|true|] ev
+
+   let top = (optionValues (i+1) nextHeadsEvent) -
+             (optionValues (i+1) nextTailsEvent)
+   let bottom = (stockValues (i+1) nextHeadsEvent) -
+                (stockValues (i+1) nextTailsEvent)
+   -(top / bottom)
+
+let initial, u, d, r = (75.0, 3.0, 1.0, 2.0)
+
+let optionValue1 = optionValue (u, d, r, initial) 2 (putOptionPayoff 95.0)
+let stockValue1 = rvNStock u d initial
+let event1 = forceEParts 0 [|true; true;|] eAllTails
+let event2 = forceEParts 0 [|true; false;|] eAllTails
+let event3 = forceEParts 0 [|false; false;|] eAllTails
+
+printfn "%f" (delta stockValue1 optionValue1 0 event1)
+printfn "%f" (delta stockValue1 optionValue1 1 event1)
+printfn "%f" (delta stockValue1 optionValue1 0 event2)
+printfn "%f" (delta stockValue1 optionValue1 1 event2)
+printfn "%f" (delta stockValue1 optionValue1 0 event3)
+printfn "%f" (delta stockValue1 optionValue1 1 event3)
