@@ -5,6 +5,8 @@
 #light
 module deltahedging
 
+
+(* types from assignment page *)
 type event1 = bool
 type event = int -> event1
 type rv = event -> double
@@ -21,6 +23,10 @@ let eAllTails timeStep =
 let eAlternating timeStep =
    if (timeStep % 2 = 0) then true else false
 
+(* Generate true false events with true likelihood of P
+   Uses a reference and a map to keep track of already
+   generated events
+ *)
 let makeERandP p = 
    let mapRef = ref (Map.empty : Map<int, event1>)
    let rand = System.Random()
@@ -33,8 +39,10 @@ let makeERandP p =
 
    eRandom 
 
+(* SubSet of makeERandP *)
 let makeERandom () = makeERandP 0.5
 
+(* Trending is awesome *)
 let makeERandT () = 
    let mapRef = ref (Map.empty : Map<int, event1>)
    let rand = System.Random()
@@ -51,6 +59,7 @@ let makeERandT () =
 
    eRandom 
 
+(* wrap an event in a set series of results *)
 let forceEParts t ba anEvent =
    let eRandom timeStep =
       if timeStep >= t + (Array.length ba) || timeStep < t
@@ -64,14 +73,10 @@ let doubleToRV f =
       f
    randomV
 
-
+(* Master function for counting heads or tails *)
 let rvNCountSomething something i = 
    let randomV (ev : event) = 
       let results = seq { for j in 0..(i-1) -> (ev j) }
-      //let aggregate = Seq.countBy (fun elem -> elem) results
-      //match Seq.tryFind (fun elem -> something = (fst elem)) aggregate with
-      //   | Some((_, count)) -> double count
-      //   | None -> 0.0
       double (Seq.fold (fun acc x -> if x = something then acc + 1 else acc) 
                        0 results)
    randomV
@@ -79,6 +84,7 @@ let rvNCountSomething something i =
 let rvNCountHeads = rvNCountSomething true 
 let rvNCountTails = rvNCountSomething false 
 
+(* Calcs value of stock after timesteps *)
 let rvNStock (u : float) (d : float) (initial : float) timeSteps =
    let randomV (ev : event) =
       let results = seq { for i in 1..(timeSteps) -> (ev i)}
@@ -88,6 +94,7 @@ let rvNStock (u : float) (d : float) (initial : float) timeSteps =
    randomV
 
 
+(* I have no idea why this function is useful *)
 let rvPathD timeStep = 
    let randomV (ev : event) = 
       let results = seq { for i in (timeStep%3)..3..(timeStep-3) -> (ev i) }
@@ -95,6 +102,9 @@ let rvPathD timeStep =
                        0 results)
    randomV
 
+(* These are probably useful for illustration, but I don't know
+   how to make it work 
+ *)
 let unaryLiftRV doubleFunc randVar =
    let randomV (ev : event) =
       doubleFunc (randVar ev)
@@ -105,6 +115,8 @@ let binaryLiftRV doubleFunc randVarA randVarB =
       doubleFunc (randVarA ev) (randVarB ev)
    randomV
 
+
+(* The following four functions ripped from lab6 *)
 let putOptionPayoff strike stock = 
    max 0.0 (strike - stock)
 
@@ -118,6 +130,7 @@ let nchoosek (n : int) k =
       let myS = seq { for i in 1..newK -> (n-(i-1), i) } 
       Seq.fold (fun acc x -> acc * fst x / snd x ) 1 myS
 
+(* Gives the expected value of the option after a number of periods *)
 let optionValueHelper (periods : int) (s0 : double) 
                 (u : double) (d : double) (r : double) 
                 (opt : double -> double) =
@@ -137,6 +150,9 @@ let optionValueHelper (periods : int) (s0 : double)
    
    ((1.0 / r) ** (double periods)) * sum
 
+(* Gives the expected value of the option given a starting time and
+   a particular option and stockmodel
+ *)
 let optionValue stockmodel timeperiods anOption =
    let (u, d, oneplusr, initial) = stockmodel
    let randomVSeq i (ev : event) =
@@ -144,6 +160,12 @@ let optionValue stockmodel timeperiods anOption =
       optionValueHelper (timeperiods - i) currentValue u d oneplusr anOption
    randomVSeq
 
+(* The equation from Clements / Class
+   According to wikipedia, this number represents a percentage of the 
+   number of stocks that we should be buying / selling to hedge.
+   So if we get .50 out of this and our option is for 100 stocks, we should
+   buy/sell 50 stocks to hedge
+ *)
 let delta stockValues optionValues i (ev : event) =
    let nextTailsEvent = forceEParts (i+1) [|false|] ev
    let nextHeadsEvent = forceEParts (i+1) [|true|] ev
@@ -154,17 +176,24 @@ let delta stockValues optionValues i (ev : event) =
                 (stockValues (i+1) nextTailsEvent)
    -(top / bottom)
 
-let initial, u, d, r = (75.0, 3.0, 1.0, 2.0)
+(* We are punting here.  We lack the knowledge about delta hedging to
+   correctly interpret the output of delta to make this function work 
+   properly.  Unless this is actually correct, in which case disregard
+   the previous statement.
+ *)
+let illustration model timesteps anOption (ev : event) : unit =
+   let (u, d, oneplusr, initial) = model
 
-let optionValue1 = optionValue (u, d, r, initial) 2 (putOptionPayoff 95.0)
-let stockValue1 = rvNStock u d initial
-let event1 = forceEParts 0 [|true; true;|] eAllTails
-let event2 = forceEParts 0 [|true; false;|] eAllTails
-let event3 = forceEParts 0 [|false; false;|] eAllTails
+   let stockValues = rvNStock u d initial
+   let optionValues = optionValue model timesteps anOption
 
-printfn "%f" (delta stockValue1 optionValue1 0 event1)
-printfn "%f" (delta stockValue1 optionValue1 1 event1)
-printfn "%f" (delta stockValue1 optionValue1 0 event2)
-printfn "%f" (delta stockValue1 optionValue1 1 event2)
-printfn "%f" (delta stockValue1 optionValue1 0 event3)
-printfn "%f" (delta stockValue1 optionValue1 1 event3)
+   for i in 0..(timesteps-1) do
+      let thisDelta = delta stockValues optionValues i ev
+      if thisDelta = 0.0 then
+         printfn "Step %d, Do Nothing." i
+      else if thisDelta > 0.0 then
+         printfn "Step %d, Short %f of the stock" i thisDelta
+      else
+         printfn "Step %d, Buy %f of the stock" i (abs thisDelta)
+//illustration (2.0, 0.5, 1.1, 100.0) 3 (callOptionPayoff 190.0) 
+//   (forceEParts 1 [|true; true; false|] eAllTails)

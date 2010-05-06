@@ -142,13 +142,16 @@ let test_rvNCountTails () =
 [<Fact>]
 let test_rvNStock () =
    ignore (rvNStock : double -> double -> double -> rvseq)
+   (* Simple up/down test *)
    let rnVStock1 = rvNStock 1.004 0.999 1.0 1
    rnVStock1 eAllHeads |> should equal 1.004
    rnVStock1 eAllTails |> should equal 0.999
+   (* Slightly more complicated *)
    let rnVStock2 = rvNStock 2.0 1.0 1.0 10
    rnVStock2 eAllHeads |> should equal (1.0 * 2.0 ** 10.0)
    rnVStock2 eAllTails |> should equal (1.0 * 1.0 ** 10.0)
 
+   (* Bigger still *)
    let forceArray = [|true; true; true; true; false; 
                       false; false; false; false; false|]
    rnVStock2 (forceEParts 1 forceArray eAllTails) 
@@ -196,14 +199,16 @@ let test_Payoffs () =
 [<Fact>]
 let test_optionValue () =
    ignore (optionValue : stockmodel -> int -> option -> rvseq)
+   (* This example designed to give simple result *)
    let initial1, u1, d1, r1 = (75.0, 3.0, 1.0, 2.0)
-   optionValueHelper 2 initial u1 d1 r1 (putOptionPayoff 95.0) |>
+   optionValueHelper 2 initial1 u1 d1 r1 (putOptionPayoff 95.0) |>
       should equal 1.25
 
    let optionValue1 = optionValue (u1, d1, r1, initial1) 
                                   2 (putOptionPayoff 95.0)
    optionValue1 0 eAllTails |> should equal 1.25
 
+   (* This example from class *)
    let initial2, u2, d2, r2 = (75.0, 6.0/5.0, 4.0/5.0, 11.0/10.0)
 
    let optionValue2 = optionValue (u2, d2, r2, initial2) 
@@ -214,8 +219,7 @@ let test_optionValue () =
 [<Fact>]
 let test_delta () =
    ignore (delta : rvseq -> rvseq -> rvseq)
-   (* I apologize for the pain that you are about to see 
-      These numbers were hand calculated.  A picture of the board is 
+   (* These numbers were hand calculated.  A picture of the board is 
       available at http://ky13.net/0gxV 
    *)
    let initial, u, d, r, expiry = (100.0, 2.0, 0.5, 1.1, 3)
@@ -235,4 +239,7 @@ let test_delta () =
    (equalWithTolerance 0.1 -1.0 (myDelta 2 events))
       |> should equal true
 
-// ignore (illustration : stockmodel -> int -> option -> event -> ())
+[<Fact>]
+let test_illustration () =
+   (* We have no idea how to test a function that returns nothing...so yeah *)
+   ignore (illustration : stockmodel -> int -> option -> event -> unit )
