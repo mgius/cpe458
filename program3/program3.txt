@@ -1,0 +1,14 @@
+type term = (double * double) -> coefficient exponent
+
+eqn = term list
+
+3x^2 + 4x^1/2 - 9
+
+           low       high range | where the zero is
+nr = eqn * double * double ->      double
+
+part 2
+
+develop expectation function that works on an arbitrary random variable
+
+
