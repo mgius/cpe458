@@ -1,0 +1,9 @@
+"beta" = does the stock behave like the market
+
+a is the "market"
+Beta(b) = covariance(p(a), p(b)) / var ( p(b) )
+
+1) computer beta of 1 share of IBM vs 1 share of VFINX
+   separately for 1990-2000 and 2000-2010
+
+2) computer beta for a bond fund on the same time periods

@@ -1,0 +1,5 @@
+1. Computer olling volatility (1-year window, std. dev. of daily multiple)
+   of 2 different stocks (one value, one growth) over the last 20 years
+
+    ______
+____|     |_____
