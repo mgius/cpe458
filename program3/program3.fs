@@ -52,9 +52,12 @@ let findZeros (eqn, start) =
          then x 
          else
             inner (iterations - 1)
-                  (x - (evalPoly eqn x / 
-                       (evalPoly eqnDeriv x)))
+                  (x - (evalPoly eqn x) / 
+                       (evalPoly eqnDeriv x))
       inner 1000 start
+
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
 
 type event1 = bool
 type event = int -> event1
@@ -117,3 +120,4 @@ let updateTree probability flips initialValue aTree =
 (* Records the timeSteps called by an Event *)
 //let eventRecorder someSet anEvent i =
 //   anEvent i
+
