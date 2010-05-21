@@ -121,3 +121,5 @@ let updateTree probability flips initialValue aTree =
 //let eventRecorder someSet anEvent i =
 //   anEvent i
 
+let expectedVal (randomV : rv) (headP : double) =
+   1.0
