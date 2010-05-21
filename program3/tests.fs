@@ -45,15 +45,15 @@ let test_findZeros () =
    (almostEqual (evalPoly poly1 (findZeros (poly1, 1000.0))) 0.0) 
       |> should equal true
 
-   let poly2 = [(1.0,2.0);(-2.0,1.0);(3.0,0.0)]
+   let poly2 = [(1.0,2.0);(-4.0,1.0);(3.0,0.0)]
 
-   (almostEqual (evalPoly poly2 (findZeros (poly2, 6.0))) 3.0) 
+   (almostEqual (evalPoly poly2 (findZeros (poly2, 6.0))) 0.0) 
       |> should equal true
-   (almostEqual (evalPoly poly2 (findZeros (poly2, 2.0))) 3.0) 
+   (almostEqual (evalPoly poly2 (findZeros (poly2, 2.5))) 0.0) 
       |> should equal true
-   (almostEqual (evalPoly poly2 (findZeros (poly2, 0.0))) -1.0) 
+   (almostEqual (evalPoly poly2 (findZeros (poly2, 1.5))) 0.0) 
       |> should equal true
-   (almostEqual (evalPoly poly2 (findZeros (poly2, -2.0))) -1.0) 
+   (almostEqual (evalPoly poly2 (findZeros (poly2, 0.0))) 0.0) 
       |> should equal true
    let poly3 = [(3.0,0.0)]
    (findZeros (poly3, 0.0)) |> should equal 0.0 
