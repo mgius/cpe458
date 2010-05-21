@@ -70,7 +70,10 @@ type flip =
    | AFlip of event1
    | Unobserved
 
-(* tree structure to represent the values I've explored *)
+(* tree structure to represent the values I've explored 
+   I'm defining the "Left" branch as the "true" branch
+ *)
+
 type tree =
    | Undef // Unexplored branch
    | Leaf of float // value of this branch
@@ -116,6 +119,29 @@ let updateTree probability flips initialValue aTree =
       | _ , Leaf(v) -> Leaf v // This also shouldn't happen...
    inner initialValue (flips, aTree)
 
+
+let findUndef treeRoot =
+   let rec inner direction = function
+      | Leaf(i) -> []
+      | Undef -> [direction]
+      | Node(leftN, rightN) ->
+         match inner true leftN with // left branch
+            | [] -> 
+               match inner false rightN with 
+                  | [] -> []
+                  | path -> [direction] @ path
+            | path -> [direction] @ path
+
+   match treeRoot with 
+      | Leaf(i) -> [] // This really shouldn't happen...
+      | Undef -> [] // This is possible, but unlikely
+      | Node(leftN, rightN) -> 
+         let leftPath = inner true leftN
+         if not (leftPath = []) then leftPath 
+         else
+            inner false rightN
+            
+
 (* Records the timeSteps called by an Event *)
 //let eventRecorder someSet anEvent i =
 //   anEvent i
@@ -128,17 +154,12 @@ let forceEParts t ba anEvent timeStep =
       then (anEvent timeStep)
       else 
          ba.[timeStep - t]
+
 let eAllHeads timeStep = true
 
-(* Finds the first undefined branch, left-depth first traversal 
-   Is probably kind of slow *)
-let findUndef aTree = 
-   let rec loop (acc : event1 list) = function
-      | Undef -> acc :: Unobserved // base case
-      | Leaf -> 
-      | 
-      
-   
+let sneakyEvent anEvent highest setRef timeStep =
+   setRef := (!setRef).Add(timeStep)
+   anEvent 1
 
 let expectedVal (randomV : rv) (headP : double) =
    1.0
