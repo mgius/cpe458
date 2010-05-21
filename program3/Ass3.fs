@@ -81,7 +81,6 @@ type tree =
    to reflect this
    function maps on the flip list * rest of the tree
  *)
-
 let updateTree probability flips initialValue aTree =
    let rec inner value = function
       // Base case, assign value to a Leaf
@@ -120,6 +119,26 @@ let updateTree probability flips initialValue aTree =
 (* Records the timeSteps called by an Event *)
 //let eventRecorder someSet anEvent i =
 //   anEvent i
+
+(* wrap an event in a set series of results 
+   Copied from program2 
+ *)
+let forceEParts t ba anEvent timeStep =
+   if timeStep >= t + (Array.length ba) || timeStep < t
+      then (anEvent timeStep)
+      else 
+         ba.[timeStep - t]
+let eAllHeads timeStep = true
+
+(* Finds the first undefined branch, left-depth first traversal 
+   Is probably kind of slow *)
+let findUndef aTree = 
+   let rec loop (acc : event1 list) = function
+      | Undef -> acc :: Unobserved // base case
+      | Leaf -> 
+      | 
+      
+   
 
 let expectedVal (randomV : rv) (headP : double) =
    1.0

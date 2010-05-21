@@ -106,3 +106,37 @@ let test_updateTree () =
                              Node( Leaf 10.0, Leaf 20.0)))
    let tree6 = updateTree probability flips5 value5 tree5
    tree6 |> should equal result5
+
+[<Fact>]
+let test_forceEParts () =
+   let makeERandP p = 
+      let mapRef = ref (Map.empty : Map<int, event1>)
+      let rand = System.Random()
+      let eRandom timeStep =
+         match ((!mapRef).TryFind timeStep) with 
+            | Some(boolean) -> boolean
+            | None -> let result = if rand.NextDouble() <= p then true else false
+                      mapRef := (!mapRef).Add (timeStep, result)
+                      result
+   
+      eRandom 
+   (* Create a random variable, call it a number of times, then
+      overlay an array and check to see if it took hold *)
+   let eRandom1 = makeERandP 0.5 
+   (eRandom1 1) |> should equal (eRandom1 1)
+   let array1 = [|true; false; true; true; false;|]
+   for i = 1 to 10 do ignore (eRandom1 i)
+   let eRandom2 = forceEParts 2 array1 eRandom1
+   for i = 2 to 6 do (eRandom2 i) |> should equal array1.[i-2]
+   (* Test for bug of mine.  Wasn't handling timestep <> the overlay start *)
+   (eRandom2 1) |> should equal (eRandom2 1)
+   (eRandom2 7) |> should equal (eRandom2 7)
+
+   (* Create a random variable, grab a result, invert it, and overlay it *)
+   let eRandom3 = makeERandP 0.5
+   let result = eRandom3 1
+   let eRandom4 = forceEParts 1 [|not result|] eRandom3
+   result |> should not_equal (eRandom4 1)
+
+   (* Original has not changed *)
+   result |> should equal (eRandom3 1)
