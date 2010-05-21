@@ -19,8 +19,9 @@ all: $(PROGRAM)
 $(PROGRAM): $(PROGRAM).fs
 	$(FSC) $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST)
 
+dll: $(PROGRAM).dll
 $(PROGRAM).dll: $(PROGRAM).fs
-	$(FSC) -a $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST)
+	$(FSC) -a $(REFERENCE) $(PRE) $(PROGRAM).fs $(POST) -o $@
 
 run: $(PROGRAM)
 	mono ./$(PROGRAM).exe

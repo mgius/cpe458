@@ -6,10 +6,7 @@ open Xunit
 open FsxUnit.Syntax
 open System
 
-open program3
-
-let equalWithTolerance tolerance left right =
-   (abs (right - left)) < tolerance
+open Ass3
 
 [<Fact>]
 let test_deriv () =
@@ -21,6 +18,10 @@ let test_deriv () =
    let poly2deriv = [(2.0,1.0);(2.0,0.0)]
    (deriv poly2) |> should equal poly2deriv
 
+   let poly3 = [(3.0,0.0)]
+   let poly3deriv = []
+   (deriv poly3) |> should equal poly3deriv
+
 [<Fact>]
 let test_evalPoly () =
    let poly1 = [(1.0,2.0)]
@@ -31,3 +32,35 @@ let test_evalPoly () =
    let poly2 = [(1.0,2.0);(2.0,1.0);(3.0,0.0)]
    (evalPoly poly2 1.0) |> should equal 6.0
    (evalPoly poly2 2.0) |> should equal 11.0
+
+[<Fact>]
+let test_findZeros () =
+   let poly1 = [(1.0,2.0)]
+   (findZeros (poly1, 0.0)) |> should equal 0.0
+   (almostEqual (findZeros (poly1, 1.0)) 0.0 ) |> should equal true
+   (almostEqual (findZeros (poly1, 10000000.0)) 0.0) |> should equal true
+
+   let poly2 = [(1.0,2.0);(-2.0,1.0);(3.0,0.0)]
+
+   (almostEqual (findZeros (poly2, 6.0)) 3.0) |> should equal true
+   (almostEqual (findZeros (poly2, 2.0)) 3.0) |> should equal true
+   (almostEqual (findZeros (poly2, 0.0)) -1.0) |> should equal true
+   (almostEqual (findZeros (poly2, -2.0)) -1.0) |> should equal true
+
+   let poly3 = [(3.0,0.0)]
+   (findZeros (poly3, 0.0)) |> should equal 0.0 
+   (findZeros (poly3, 1.0)) |> should equal 1.0
+
+[<Fact>]
+let test_updateTree () =
+   // I wrote this monstrosity, I better test it
+   let tree1 = Undef // empty tree
+   let flips1 = [AFlip(true); AFlip(true)]
+   let value1 = 30.0
+   let probability1 = 0.5 
+   let result1 = Node(Node(Leaf 7.5, Undef), Undef)
+
+   updateTree probability1 flips1 value1 tree1 |> should equal result1
+
+   updateTree 
+
