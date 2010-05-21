@@ -65,10 +65,44 @@ let test_updateTree () =
    let tree1 = Undef // empty tree
    let flips1 = [AFlip(true); AFlip(true)]
    let value1 = 30.0
-   let probability1 = 0.5 
+   let probability = 0.5 
    let result1 = Node(Node(Leaf 7.5, Undef), Undef)
+   let tree2 = updateTree probability flips1 value1 tree1 
+   tree2 |> should equal result1
 
-   updateTree probability1 flips1 value1 tree1 |> should equal result1
+   let flips2 = [AFlip(true); AFlip(false); AFlip(true)]
+   let value2 = 40.0
+   let result2 = Node( Node(Leaf 7.5, 
+                            Node(Leaf 5.0, Undef)),
+                       Undef)
+   let tree3 = updateTree probability flips2 value2 tree2
+   tree3 |> should equal result2
 
-   updateTree 
+   // Testing Unobserved
+   let flips3 = [AFlip(false); Unobserved; AFlip(true)]
+   let value3 = 80.0
+   let result3 = Node( Node(Leaf 7.5, 
+                            Node(Leaf 5.0, Undef)),
+                       Node( Node( Leaf 10.0, Undef),
+                             Node( Leaf 10.0, Undef)))
+   let tree4 = updateTree probability flips3 value3 tree3
+   tree4 |> should equal result3
 
+   let flips4 = [AFlip(false); Unobserved; AFlip(false)]
+   let value4 = 160.0
+   let result4 = Node( Node(Leaf 7.5, 
+                            Node(Leaf 5.0, Undef)),
+                       Node( Node( Leaf 10.0, Leaf 20.0),
+                             Node( Leaf 10.0, Leaf 20.0)))
+
+   let tree5 = updateTree probability flips4 value4 tree4
+   tree5 |> should equal result4
+
+   let flips5 = [AFlip(true); AFlip(false); AFlip(false)]
+   let value5 = 200.0
+   let result5 = Node( Node(Leaf 7.5, 
+                            Node(Leaf 5.0, Leaf 25.0)),
+                       Node( Node( Leaf 10.0, Leaf 20.0),
+                             Node( Leaf 10.0, Leaf 20.0)))
+   let tree6 = updateTree probability flips5 value5 tree5
+   tree6 |> should equal result5
