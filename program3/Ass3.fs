@@ -83,17 +83,21 @@ type tree =
    Given a list of flips, update the appropriate branches in the tree
    to reflect this
    function maps on the flip list * rest of the tree
+
+   Looking at this, I suspect that I'm completely reconstructing the
+   tree with each initial call to this.  That's potentially bad
  *)
 let updateTree probability flips initialValue aTree =
    let rec inner value = function
       // Base case, assign value to a Leaf
       | [], Undef -> Leaf value 
-      // I've reached an unobserved point, and the branch is undefined.
-      // Define it, and follow both branches
+      // I've reached an unobserved point, and the branch is defined.
+      // follow both branches
       | Unobserved :: tl , Node(left, right) -> 
          Node(inner (value * probability) (tl, left),
               inner (value * (1.0 - probability)) (tl, right))
       // Same as above except the tree is undefined below here
+      // Define it, and follow both branches
       | Unobserved :: tl , Undef ->
          Node(inner (value * probability) (tl, Undef),
               inner (value * (1.0 - probability)) (tl, Undef))
@@ -183,7 +187,24 @@ let eAllHeads timeStep = true
 (* This event records the called timesteps *)
 let sneakyEvent anEvent (setRef : Set<int> ref) timeStep =
    setRef := (!setRef).Add(timeStep)
-   anEvent 1
+   anEvent timeStep
+
+let rec printTree indent = function
+   | Undef -> printfn "%s Undef" indent
+   | Leaf(i) -> printfn "%s %f" indent i
+   | Node(left, right) ->
+      printfn "%s Node" indent
+      printTree (String.concat "" [indent;"  "]) left
+      printTree (String.concat "" [indent;"  "]) right
+
+let rec printFlips flips =
+   let action = function
+      | AFlip(f) -> 
+         printf "%A ;" f
+      | Unobserved -> printf "Unobserved ;"
+   List.iter action flips
+   printfn ""
+
 
 let expectedVal (randomV : rv) (headP : double) =
    let setRef = ref (Set.empty : Set<int>)
@@ -191,15 +212,30 @@ let expectedVal (randomV : rv) (headP : double) =
       match findUndef aTree with
          | [||] -> aTree // Tree is complete
          | forcedEvents -> 
+            printTree "" aTree
+            printfn "" 
             setRef := Set.empty
+            //printfn "TestPath: %A" forcedEvents
             let anEvent = forceEParts 1 forcedEvents eAllHeads
             let rValue = randomV (sneakyEvent anEvent setRef)
+            //printfn "rValue: %A" rValue
             let flips = generateFlips !setRef anEvent
             inner (updateTree headP flips rValue aTree)
 
    let rValue = randomV (sneakyEvent eAllHeads setRef)
    let flips = generateFlips !setRef eAllHeads
    let initialTree = updateTree headP flips rValue Undef
+   //printTree "" initialTree
+   //printfn ""
    let finalTree = inner initialTree
+   //printTree "" finalTree
 
    sumTree finalTree
+
+//let easyRV3 ev = 
+//   if (ev 1) then
+//      if (ev 2) then
+//         20.0 
+//      else 0.0
+//   else 0.0
+//expectedVal easyRV3 0.5

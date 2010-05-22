@@ -180,3 +180,16 @@ let test_expectedVal_easy () =
    let easyRV1 ev =
       10.0
    expectedVal easyRV1 0.5 |> should equal 10.0
+
+   let easyRV2 ev =
+      if ev 1 then 10.0 else 0.0
+   expectedVal easyRV2 0.1 |> should equal 1.0
+
+   let easyRV3 ev = 
+      if (ev 1) then
+         if (ev 2) then
+            20.0 
+         else 0.0
+      else 0.0
+   expectedVal easyRV3 1.0 |> should equal 20.0
+   expectedVal easyRV3 0.5 |> should equal 5.0
