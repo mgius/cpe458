@@ -121,26 +121,27 @@ let updateTree probability flips initialValue aTree =
 
 
 (* left-depth first search looking for undefined branches
-   Returns the path to the undefined branch
+   Returns the path to the undefined branch as an ARRAY 
+   (for use in forceEParts)
  *)
 let findUndef treeRoot =
    let rec inner direction = function
-      | Leaf(i) -> []
-      | Undef -> [direction]
+      | Leaf(i) -> [||]
+      | Undef -> [|direction|]
       | Node(leftN, rightN) ->
          match inner true leftN with // left branch
-            | [] -> 
+            | [||] -> 
                match inner false rightN with 
-                  | [] -> []
-                  | path -> [direction] @ path
-            | path -> [direction] @ path
+                  | [||] -> [||]
+                  | path -> Array.append [|direction|] path
+            | path -> Array.append [|direction|] path
 
    match treeRoot with 
-      | Leaf(i) -> [] // This really shouldn't happen...
-      | Undef -> [] // This is possible, but unlikely
+      | Leaf(i) -> [||] // We'll end up with an empty list if all leaves
+      | Undef -> [||] // This shouldn't happen
       | Node(leftN, rightN) -> 
          let leftPath = inner true leftN
-         if not (leftPath = []) then leftPath 
+         if not (leftPath = [||]) then leftPath 
          else
             inner false rightN
             
@@ -157,11 +158,16 @@ let generateFlips aSet anEvent =
       else
          inner (acc @ [Unobserved]) (count + 1) innerSet
    inner [] 1 aSet
-      
 
-(* Records the timeSteps called by an Event *)
-//let eventRecorder someSet anEvent i =
-//   anEvent i
+(* Sums the leaves of a completed tree.  
+   Tree leaves are already multiplied by the right probability to make the
+   numbers work out
+ *)
+let rec sumTree = function
+   | Undef -> 0.0 // This absolutely shouldn't happen
+   | Leaf(i) -> i
+   | Node(left, right) -> sumTree(left) + sumTree(right)
+      
 
 (* wrap an event in a set series of results 
    Copied from program2 
@@ -174,9 +180,26 @@ let forceEParts t ba anEvent timeStep =
 
 let eAllHeads timeStep = true
 
+(* This event records the called timesteps *)
 let sneakyEvent anEvent (setRef : Set<int> ref) timeStep =
    setRef := (!setRef).Add(timeStep)
    anEvent 1
 
 let expectedVal (randomV : rv) (headP : double) =
-   1.0
+   let setRef = ref (Set.empty : Set<int>)
+   let rec inner (aTree : tree) : tree = 
+      match findUndef aTree with
+         | [||] -> aTree // Tree is complete
+         | forcedEvents -> 
+            setRef := Set.empty
+            let anEvent = forceEParts 1 forcedEvents eAllHeads
+            let rValue = randomV (sneakyEvent anEvent setRef)
+            let flips = generateFlips !setRef anEvent
+            inner (updateTree headP flips rValue aTree)
+
+   let rValue = randomV (sneakyEvent eAllHeads setRef)
+   let flips = generateFlips !setRef eAllHeads
+   let initialTree = updateTree headP flips rValue Undef
+   let finalTree = inner initialTree
+
+   sumTree finalTree

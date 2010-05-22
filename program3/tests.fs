@@ -153,12 +153,30 @@ let test_generateFlips () =
 [<Fact>]
 let test_findUndef () =
    let tree1 = Node( Leaf 1.0, Undef)
-   let undef1 = [false]
+   let undef1 = [|false|]
    findUndef tree1 |> should equal undef1
 
    let tree2 = Node( Node ( Leaf 1.0, 
                             Node (Undef, 
                                   Undef)),
                      Undef)
-   let undef2 = [true;false;true]
+   let undef2 = [|true;false;true|]
    findUndef tree2 |> should equal undef2
+
+[<Fact>]
+let test_sumTree () =
+   let tree1 = Node(Leaf 1.0, Leaf 2.0)
+   sumTree tree1 |> should equal 3.0
+
+   let tree2 = Node(Node(Node(Leaf 2.0,
+                              Leaf 3.3),
+                         Leaf 4.2),
+                    Node(Leaf 1.2,
+                         Leaf 0.0))
+   (sumTree tree2) |> should equal 10.7
+
+[<Fact>]
+let test_expectedVal_easy () =
+   let easyRV1 ev =
+      10.0
+   expectedVal easyRV1 0.5 |> should equal 10.0
