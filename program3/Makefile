@@ -21,7 +21,8 @@ $(PROGRAM): $(PROGRAM).fsi $(PROGRAM).fs
 
 dll: $(PROGRAM).dll
 $(PROGRAM).dll: $(PROGRAM).fs
-	$(FSC) -a $(REFERENCE) $(PRE) $^ $(POST) -o $@
+	$(FSC) -a $(REFERENCE) $(PRE) $^ $(POST) -o ass3.dll
+#$(FSC) -a $(REFERENCE) $(PRE) $^ $(POST) -o $@
 
 run: $(PROGRAM)
 	mono ./$(PROGRAM).exe
