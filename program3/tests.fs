@@ -140,3 +140,25 @@ let test_forceEParts () =
 
    (* Original has not changed *)
    result |> should equal (eRandom3 1)
+
+
+[<Fact>]
+let test_generateFlips () =
+   let set1 = Set.empty.Add(1).Add(3).Add(4)
+   let anEvent1 = forceEParts 1 [|true;false;false;true|] eAllHeads
+   let targetFlips1 = [AFlip(true);Unobserved;AFlip(false);AFlip(true)]
+   generateFlips set1 anEvent1 |> should equal targetFlips1
+
+
+[<Fact>]
+let test_findUndef () =
+   let tree1 = Node( Leaf 1.0, Undef)
+   let undef1 = [false]
+   findUndef tree1 |> should equal undef1
+
+   let tree2 = Node( Node ( Leaf 1.0, 
+                            Node (Undef, 
+                                  Undef)),
+                     Undef)
+   let undef2 = [true;false;true]
+   findUndef tree2 |> should equal undef2

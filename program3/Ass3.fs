@@ -120,6 +120,9 @@ let updateTree probability flips initialValue aTree =
    inner initialValue (flips, aTree)
 
 
+(* left-depth first search looking for undefined branches
+   Returns the path to the undefined branch
+ *)
 let findUndef treeRoot =
    let rec inner direction = function
       | Leaf(i) -> []
@@ -141,6 +144,20 @@ let findUndef treeRoot =
          else
             inner false rightN
             
+(* Given a set of timesteps and an Event, construct a 
+   well structured set of flips for use by the tree updater 
+ *)
+let generateFlips aSet anEvent =
+   let rec inner acc count innerSet =
+      if Set.count innerSet = 0 then acc // base case
+      else if Set.minElement innerSet = count then 
+         inner (acc @ [AFlip(anEvent count)]) 
+               (count + 1) 
+               (Set.remove count innerSet)
+      else
+         inner (acc @ [Unobserved]) (count + 1) innerSet
+   inner [] 1 aSet
+      
 
 (* Records the timeSteps called by an Event *)
 //let eventRecorder someSet anEvent i =
@@ -157,7 +174,7 @@ let forceEParts t ba anEvent timeStep =
 
 let eAllHeads timeStep = true
 
-let sneakyEvent anEvent highest setRef timeStep =
+let sneakyEvent anEvent (setRef : Set<int> ref) timeStep =
    setRef := (!setRef).Add(timeStep)
    anEvent 1
 
