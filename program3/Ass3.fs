@@ -231,11 +231,3 @@ let expectedVal (randomV : rv) (headP : double) =
    //printTree "" finalTree
 
    sumTree finalTree
-
-//let easyRV3 ev = 
-//   if (ev 1) then
-//      if (ev 2) then
-//         20.0 
-//      else 0.0
-//   else 0.0
-//expectedVal easyRV3 0.5

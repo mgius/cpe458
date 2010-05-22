@@ -193,3 +193,46 @@ let test_expectedVal_easy () =
       else 0.0
    expectedVal easyRV3 1.0 |> should equal 20.0
    expectedVal easyRV3 0.5 |> should equal 5.0
+
+[<Fact>]
+let test_expectedVal_poyler () =
+    // These test cases taken or adapted from those peter posted
+
+   let randomVar (ev : event) : double =
+       if ev 1 && ev 2 && ev 3 then 50.0
+       else 0.0 
+   expectedVal randomVar 0.5 |> should equal (50.0 * 0.5 ** 3.0)
+   expectedVal randomVar 0.75 |> should equal (50.0 * 0.75 ** 3.0)
+
+   // This test removed because I haven't been able to calculate 
+   // the value of this to compare against yet
+   //let randomVar2 (ev: event) : double =
+   //    if ev 1 && ev 2 && ev 3 then
+   //        if ev 4 && ev 5 then
+   //            60.0
+   //        else
+   //            20.0
+   //    elif ev 8 then
+   //        10.0
+   //    else
+   //        0.0 
+
+   //// I'm close, but not quite right here
+   //let randomVar2expected =
+   //   60.0 * 0.5 ** 5.0 + 
+   //   20.0 * 0.5 ** 5.0 * 3.0 + // 3 ways to hit 20
+   //   10.0 * 0.5 ** 8.0 * 128.0 + // 128 ways to hit 8 from the right side
+   //   10.0 * 0.5 ** 8.0 * 64.0 + // 64 ways to hit 8 after one false
+   //   10.0 * 0.5 ** 8.0 * 32.0 // 32 ways to hit 8 after two falses
+   //expectedVal randomVar2 0.5 |> should equal randomVar2expected
+
+   let randomVar3 ev =
+      if ev 1 then 50.0
+      elif ev 3 then 20.0
+      else 0.0
+
+   let randomVar3expected =
+      50.0 * 0.5 ** 1.0 +
+      20.0 * 0.5 ** 2.0 
+
+   expectedVal randomVar3 0.5 |> should equal randomVar3expected
