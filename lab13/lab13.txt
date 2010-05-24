@@ -1,0 +1,7 @@
+Take 30 stocks
+
+Take std deviation of them
+take mean of them
+plot against each other
+
+do this in the log domain
